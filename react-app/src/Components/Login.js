@@ -11,9 +11,7 @@ import './Login.css';
 class Login extends React.Component {
 
   state = {
-    isLoading: true,
-    username: "",
-    password: ""
+    isLoading: true
   }
 
   async componentDidMount() {
@@ -57,7 +55,7 @@ class Login extends React.Component {
       }
     }).then(response => {
       localStorage.setItem('token', response.data.token);
-      this.props.history.push("/home");
+      this.props.history.push("/home", user);
     }) 
   }
 }

@@ -3,7 +3,6 @@
   background:#475d62 url(../images/stars-bg.jpg);
   background-size:cover;
   position:relative;
-  animation: animatedBackground 10s linearl infinite alternate;
 }
 
 .login-dark form {
@@ -72,12 +71,8 @@
 .login-dark form .btn-primary:active {
   transform:translateY(1px);
 }
-  
-@keyframes fade-in {
-  from {opacity: 0;}
-  to {opacity: 1;}
-}
 
+/*
 @keyframes animatedBackground {
   from {
     background-position: 0 0;
@@ -86,3 +81,4 @@
     background-position: 100% 0;
   }
 }
+*/

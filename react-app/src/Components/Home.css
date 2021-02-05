@@ -1,0 +1,27 @@
+.home-dark {
+    height:100vh;
+    position:relative;
+    display: block;
+}
+
+.home-dark::after {
+    content: "";
+    background:#475d62 url(../images/home-bg.jpg);
+    background-size:cover;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    opacity: 0.1;
+    position: absolute;
+    z-index: -1;
+}
+
+.jumbotron {
+  transform:translate(-50%, -50%);
+  position:absolute;
+  top:50%;
+  left:50%;
+  animation-name: fade-in;
+  animation-duration: 0.5s;
+}

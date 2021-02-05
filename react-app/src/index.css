@@ -5,9 +5,16 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #434a52;
+  animation: animatedBackground 10s linear infinite alternate;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+@keyframes fade-in {
+  from {opacity: 0;}
+  to {opacity: 1;}
 }

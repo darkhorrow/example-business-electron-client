@@ -14,7 +14,7 @@ class App extends React.Component {
                 <Route exact path="/" component={Login} />
                 <Route exact path="/login" component={Login} />
                 <ProtectedRoute exact path="/home" component={Home} />
-            </Switch>
+            </Switch>     
         );
     }
 }
