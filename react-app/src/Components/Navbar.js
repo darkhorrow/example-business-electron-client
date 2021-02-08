@@ -3,7 +3,7 @@ import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faUser } from '@fortawesome/free-solid-svg-icons'
 
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Navbar, Nav, Modal, Button } from 'react-bootstrap';
 
 
@@ -18,6 +18,7 @@ class AppNavbar extends React.Component {
     super(props);
     this.handleClose = this.handleClose.bind(this);
     this.handleShow = this.handleShow.bind(this);
+    this.handleLogOut = this.handleLogOut.bind(this);
   }
 
   handleClose() {
@@ -26,6 +27,12 @@ class AppNavbar extends React.Component {
 
   handleShow() {
     this.setState({showModal: true});
+  }
+
+  handleLogOut() {
+    localStorage.removeItem('token');
+    this.handleClose();
+    this.props.history.push("/login");
   }
 
   render(){
@@ -41,14 +48,14 @@ class AppNavbar extends React.Component {
                 <Nav.Link onClick={this.handleShow}><FontAwesomeIcon icon={faUser} /> Logout</Nav.Link>
               </Nav>
           </Navbar.Collapse>
-          <Modal show={this.state.showModal} onHide={this.handleClose}>
-            <Modal.Header closeButton>
+          <Modal show={this.state.showModal} onHide={this.handleClose} className="text-light" id="logout-modal">
+            <Modal.Header closeButton className="bg-dark">
               <Modal.Title>Log out</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Are you sure you want to close the session?</Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={this.handleClose}>Close</Button>
-              <Button variant="primary" onClick={this.handleClose}>Log out</Button>
+            <Modal.Body className="bg-dark">Are you sure you want to close the session?</Modal.Body>
+            <Modal.Footer className="bg-dark">
+              <Button variant="secondary" onClick={this.handleClose}>Cancel</Button>
+              <Button variant="primary" onClick={this.handleLogOut}>Log out</Button>
             </Modal.Footer>
           </Modal>
       </Navbar>
@@ -56,4 +63,4 @@ class AppNavbar extends React.Component {
   }
 }
 
-export default AppNavbar;
+export default withRouter(AppNavbar);

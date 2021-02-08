@@ -56,13 +56,15 @@ class Home extends React.Component {
 
   quoteOfTheDay() {
     if(this.state.messageOfTheDay == null) {
+      /*
       axios.get('https://quotes.rest/qod?language=en').then(response => {
       this.setState({
         messageOfTheDay: response.data.contents.quotes[0].quote,
         quoteAuthor: response.data.contents.quotes[0].author
       });
-      
+
     }); 
+      */
     }  
   }
 }

@@ -2,6 +2,7 @@ import React from 'react';
 
 import Login  from './Components/Login';
 import Home  from './Components/Home';
+import AppNavbar from './Components/Navbar';
 
 import ProtectedRoute from './Security/ProtectedRoute'
 
@@ -13,7 +14,10 @@ class App extends React.Component {
             <Switch>
                 <Route exact path="/" component={Login} />
                 <Route exact path="/login" component={Login} />
-                <ProtectedRoute exact path="/home" component={Home} />
+                <>
+                    <AppNavbar />
+                    <ProtectedRoute exact path="/home" component={Home} />
+                </>
             </Switch>     
         );
     }

@@ -1,0 +1,20 @@
+button.close {
+    color: #fff;
+}
+
+button.close:hover {
+    color: #fff;
+}
+
+.modal-header {
+    border-bottom: 1px solid #292b2c !important;
+}
+  
+.modal-footer {
+    border-top: 1px solid #292b2c !important;
+}
+
+.modal-content {
+    border: 1px solid rgba(41,43,44,0.2) !important;
+    border-radius: .4em !important;
+}
