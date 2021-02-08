@@ -2,9 +2,11 @@ import React from "react";
 
 import axios from 'axios';
 
-import Spinner from 'react-bootstrap/Spinner'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserLock } from '@fortawesome/free-solid-svg-icons'
+import Spinner from 'react-bootstrap/Spinner';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserLock } from '@fortawesome/free-solid-svg-icons';
+
+import Auth from '../Security/Auth';
 
 import './Login.css';
 
@@ -18,6 +20,10 @@ class Login extends React.Component {
     this.setState({
       isLoading: false
     });
+
+    if(Auth.isLoggedIn()) {
+      this.props.history.push("/home");
+    }
   }
 
   render(){
