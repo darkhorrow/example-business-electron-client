@@ -27,9 +27,7 @@ class Login extends React.Component {
   }
 
   render(){
-    const {isLoading} = this.state;
-
-    return isLoading ? this.renderLoadScreen() : this.renderLoginPage();
+    return this.state.isLoading ? this.renderLoadScreen() : this.renderLoginPage();
   }
 
   renderLoadScreen() {
