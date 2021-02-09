@@ -6,7 +6,7 @@
 
 .home-dark::after {
     content: "";
-    background:#475d62 url(../images/home-bg.jpg);
+    background:#292b2c url(../images/home-bg.jpg);
     background-size:cover;
     top: 0;
     left: 0;

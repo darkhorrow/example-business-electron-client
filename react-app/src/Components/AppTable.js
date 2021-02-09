@@ -29,28 +29,18 @@ class AppTable extends React.Component {
 
   renderList() {
     return (
-        <Table striped bordered hover variant="dark">
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Description</th>
-                    <th>Price</th>
-                    <th>State</th>
-                    <th>Creation Date</th>
-                    <th>Creator</th>
-                </tr>
-            </thead>
+        <Table striped hover variant="dark">
             <tbody>
                 {
                     this.props.elements.map((item) =>  {
                         return(
                             <tr>
-                                <td>{item.code}</td>
-                                <td>{item.description}</td>
-                                <td>{item.price}</td>
-                                <td>{item.state}</td>
-                                <td>{item.creationDate}</td>
-                                <td>{item.creator.username}</td>
+                                <td><th>Code:</th> {item.code}</td>
+                                <td><th>Description:</th> {item.description}</td>
+                                <td><th>Price:</th> {item.price}</td>
+                                <td><th>State:</th> {item.state}</td>
+                                <td><th>Creation Date:</th> {item.creationDate}</td>
+                                <td><th>Creator:</th> {item.creator.username}</td>
                             </tr>
                         )
                     })

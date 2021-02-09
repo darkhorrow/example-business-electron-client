@@ -14,6 +14,25 @@ code {
     monospace;
 }
 
+  
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+ }
+ ::-webkit-scrollbar-thumb {
+  background: #292b2c;
+  border-radius: 15px;
+ }
+ ::-webkit-scrollbar-thumb:hover{
+  background: linear-gradient(13deg, #c7ceff 14%,#f9d4ff 64%);
+ }
+ ::-webkit-scrollbar-track{
+  background: #c6c8ca;
+  border-radius: 15px;
+  box-shadow: inset 7px 10px 12px #c6c8ca;
+ }
+
+
 @keyframes fade-in {
   from {opacity: 0;}
   to {opacity: 1;}

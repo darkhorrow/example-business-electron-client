@@ -36,7 +36,7 @@ class Articles extends React.Component {
   renderLoginPage() {
     return (
       <div className="container mt-5">
-        <div className="row-fluid">
+        <div className="row-fluid py-5">
           <AppTable elements={this.state.items} />
         </div>
       </div>
