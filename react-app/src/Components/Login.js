@@ -24,6 +24,8 @@ class Login extends React.Component {
     if(Auth.isLoggedIn()) {
       this.props.history.push("/home");
     }
+
+    localStorage.removeItem('token');
   }
 
   render(){
