@@ -61,3 +61,7 @@ ul.pagination .active .page-link {
 .react-bs-table-sizePerPage-dropdown ul.dropdown-menu .dropdown-item:hover{
     background-color: #6c757d;
 }
+
+.selection-cell-header, .selection-cell {
+    border-right: 1px solid #6c757d !important;
+}

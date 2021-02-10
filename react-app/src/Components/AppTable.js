@@ -1,5 +1,7 @@
 import React from "react";
 
+import AppTableActionsBar from './AppTableActionsBar';
+
 import Spinner from 'react-bootstrap/Spinner';
 
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -32,6 +34,8 @@ class AppTable extends React.Component {
 
   renderList() {
     return (
+          <>
+          <AppTableActionsBar elementName={this.props.elementName} />
           <BootstrapTable 
           keyField={this.props.id} 
           data={this.props.elements} 
@@ -41,6 +45,7 @@ class AppTable extends React.Component {
           bordered={false} 
           bootstrap4 
           />
+          </>
     );
   }
 }

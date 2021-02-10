@@ -63,14 +63,14 @@ class Articles extends React.Component {
     }];
 
     const selectRow = {
-      mode: 'checkbox',
+      mode: 'radio',
       clickToSelect: true
     };
 
     return (
       <div className="articles-dark container-fluid pt-5">
         <div className="row-fluid py-5">
-          <AppTable id={'code'} elements={this.state.items} columns={columns} selection={selectRow} />
+          <AppTable id={'code'} elements={this.state.items} columns={columns} selection={selectRow} elementName={'item'}/>
         </div>
       </div>
     );
