@@ -4,8 +4,6 @@ import axios from 'axios';
 import AppTable from './AppTable';
 
 import Spinner from 'react-bootstrap/Spinner'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuoteRight, faQuoteLeft } from '@fortawesome/free-solid-svg-icons'
 
 import './Articles.css';
 
@@ -34,13 +32,47 @@ class Articles extends React.Component {
   }
 
   renderLoginPage() {
+    const columns = [{
+      dataField: 'code',
+      text: 'Item Code',
+      sort: true
+    }, {
+      dataField: 'price',
+      text: 'Item Price',
+      sort: true
+    }, {
+      dataField: 'description',
+      text: 'Item Description',
+      sort: true
+    }, {
+      dataField: 'price',
+      text: 'Item Price',
+      sort: true
+    }, {
+      dataField: 'state',
+      text: 'Item State',
+      sort: true
+    }, {
+      dataField: 'creationDate',
+      text: 'Item Creation Date',
+      sort: true
+    }, {
+      dataField: 'creator.username',
+      text: 'Item Creator',
+      sort: true
+    }];
+
+    const selectRow = {
+      mode: 'checkbox',
+      clickToSelect: true
+    };
+
     return (
-      <div className="container mt-5">
+      <div className="container-fluid mt-5">
         <div className="row-fluid py-5">
-          <AppTable elements={this.state.items} />
+          <AppTable id={'code'} elements={this.state.items} columns={columns} selection={selectRow} />
         </div>
       </div>
-      
     );
   }
 }

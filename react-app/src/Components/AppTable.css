@@ -1,0 +1,27 @@
+.react-bootstrap-table table {
+    color: rgba(255,255,255,0.8);
+}
+
+ul.pagination .page-link {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: rgba(255,255,255,0.8);
+}
+
+ul.pagination .active .page-link {
+    background-color: #343a40;
+    border-color: #343a40;
+    color: rgba(255,255,255,0.8);
+}
+
+.react-bs-table-sizePerPage-dropdown ul.dropdown-menu{
+    background-color: #343a40;
+}
+
+.react-bs-table-sizePerPage-dropdown ul.dropdown-menu .dropdown-item{
+    color: rgba(255,255,255,0.8);
+}
+
+.react-bs-table-sizePerPage-dropdown ul.dropdown-menu .dropdown-item:hover{
+    background-color: #6c757d;
+}
