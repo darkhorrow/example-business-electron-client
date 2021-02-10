@@ -68,7 +68,7 @@ class Articles extends React.Component {
     };
 
     return (
-      <div className="container-fluid mt-5">
+      <div className="articles-dark container-fluid pt-5">
         <div className="row-fluid py-5">
           <AppTable id={'code'} elements={this.state.items} columns={columns} selection={selectRow} />
         </div>

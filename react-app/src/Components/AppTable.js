@@ -40,8 +40,6 @@ class AppTable extends React.Component {
           selectRow={this.props.selection} 
           bordered={false} 
           bootstrap4 
-          striped 
-          hover
           />
     );
   }
