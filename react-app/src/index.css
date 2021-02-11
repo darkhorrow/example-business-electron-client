@@ -32,6 +32,12 @@ code {
   box-shadow: inset 7px 10px 12px #c6c8ca;
  }
 
+ .alert {
+  position: fixed;
+  bottom: 0;
+  left: 5%;
+  width: 90%;
+ }
 
 @keyframes fade-in {
   from {opacity: 0;}

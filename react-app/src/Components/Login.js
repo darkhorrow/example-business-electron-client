@@ -6,11 +6,15 @@ import Spinner from 'react-bootstrap/Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserLock } from '@fortawesome/free-solid-svg-icons';
 
-import Auth from '../Security/Auth';
+import AppAlert from './Alerts/AppAlert';
 
 import './Login.css';
 
 class Login extends React.Component {
+  constructor(props){
+    super(props);
+    this.alertElement = React.createRef();
+  }
 
   state = {
     isLoading: true
@@ -18,7 +22,9 @@ class Login extends React.Component {
 
   async componentDidMount() {
     this.setState({
-      isLoading: false
+      isLoading: false,
+      errorMessage: null,
+      errorType: null
     }); 
   }
 
@@ -40,7 +46,8 @@ class Login extends React.Component {
           <div className="form-group"><input className="form-control" type="password" name="password" onChange={this.handleChange} placeholder="Password"/></div>
           <div className="form-group"><button className="btn btn-primary btn-block" type="submit">Log In</button></div>
         </form>
-      </div>
+        <AppAlert variant={this.state.errorType} alertMessage={this.state.errorMessage} ref={this.alertElement}/>
+      </div> 
     );
   }
 
@@ -56,7 +63,11 @@ class Login extends React.Component {
     }).then(response => {
       sessionStorage.setItem('token', response.data.token)
       this.props.history.push("/home", user);
-    }) 
+    }).catch(error => {
+      const type = error.response.status === 401 ? "danger" : "warning";
+      this.setState({errorMessage: error.response.data.message, errorType: type});
+      this.alertElement.current.open();
+    })
   }
 }
 
