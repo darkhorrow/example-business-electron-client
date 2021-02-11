@@ -30,7 +30,7 @@ class AppNavbar extends React.Component {
   }
 
   handleLogOut() {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     this.handleClose();
     this.props.history.push("/login");
   }

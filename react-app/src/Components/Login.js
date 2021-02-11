@@ -19,13 +19,7 @@ class Login extends React.Component {
   async componentDidMount() {
     this.setState({
       isLoading: false
-    });
-
-    if(Auth.isLoggedIn()) {
-      this.props.history.push("/home");
-    }
-
-    localStorage.removeItem('token');
+    }); 
   }
 
   render(){
@@ -60,7 +54,7 @@ class Login extends React.Component {
         'Content-Type': 'application/json'
       }
     }).then(response => {
-      localStorage.setItem('token', response.data.token);
+      sessionStorage.setItem('token', response.data.token)
       this.props.history.push("/home", user);
     }) 
   }

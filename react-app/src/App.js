@@ -11,7 +11,12 @@ import ProtectedRoute from './Security/ProtectedRoute'
 
 import { Route, Switch } from 'react-router-dom';
 
-axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
+axios.interceptors.request.use(
+    function(config) {
+        config.headers.Authorization = sessionStorage.getItem('token');
+        return config;
+    }
+);
 
 class App extends React.Component {
     render() {

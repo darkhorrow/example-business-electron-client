@@ -1,3 +1,5 @@
 .btn-toolbar {
     justify-content: flex-end !important;
+    animation-name: fade-in;
+    animation-duration: 0.5s;
 }

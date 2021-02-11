@@ -3,7 +3,7 @@ import decode from 'jwt-decode';
 export default class Auth {
     static isLoggedIn() {
         // Checks if there is a saved token and it's still valid
-        const token = localStorage.getItem('token'); // GEtting token from localstorage
+        const token = sessionStorage.getItem('token'); // GEtting token from localstorage
         return !!token && !this.isTokenExpired(token); // handwaiving here
     }
     
