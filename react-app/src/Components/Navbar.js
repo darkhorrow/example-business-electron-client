@@ -1,7 +1,7 @@
 import React from "react";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHome, faUser, faBoxes } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faUser, faBoxes, faTruck, faTags, faUsers, faClipboardList } from '@fortawesome/free-solid-svg-icons'
 
 import { Link, withRouter } from 'react-router-dom';
 import { Navbar, Nav, Modal, Button } from 'react-bootstrap';
@@ -44,6 +44,10 @@ class AppNavbar extends React.Component {
               <Nav className="mr-auto">
                   <Link to="/home" className="nav-link"><FontAwesomeIcon icon={faHome} /> Home</Link>
                   <Link to="/items" className="nav-link"><FontAwesomeIcon icon={faBoxes} /> Items</Link>
+                  <Link to="/suppliers" className="nav-link"><FontAwesomeIcon icon={faTruck} /> Suppliers</Link>
+                  <Link to="/price-reductions" className="nav-link"><FontAwesomeIcon icon={faTags} /> Price reductions</Link>
+                  <Link to="/users" className="nav-link"><FontAwesomeIcon icon={faUsers} /> Users</Link>
+                  <Link to="/deactivations" className="nav-link"><FontAwesomeIcon icon={faClipboardList} /> Deactivations</Link>
               </Nav>
               <Nav>
                 <Nav.Link onClick={this.handleShow}><FontAwesomeIcon icon={faUser} /> Logout</Nav.Link>
