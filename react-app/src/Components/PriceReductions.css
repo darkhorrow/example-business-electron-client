@@ -6,13 +6,13 @@
 
 .price-reductions-dark::after {
     content: "";
-    background:#292b2c url(../images/items-bg.jpg);
+    background:#292b2c url(../images/prices-bg.jpg);
     background-size:cover;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
-    opacity: 0.05;
+    opacity: 0.3;
     position: absolute;
     z-index: -1;
 }
