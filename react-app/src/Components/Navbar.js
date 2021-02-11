@@ -45,6 +45,7 @@ class AppNavbar extends React.Component {
                   <Link to="/home" className="nav-link"><FontAwesomeIcon icon={faHome} /> Home</Link>
                   <Link to="/items" className="nav-link"><FontAwesomeIcon icon={faBoxes} /> Items</Link>
                   <Link to="/suppliers" className="nav-link"><FontAwesomeIcon icon={faTruck} /> Suppliers</Link>
+                  <div className="navbar-roles-division"></div>
                   <Link to="/price-reductions" className="nav-link"><FontAwesomeIcon icon={faTags} /> Price reductions</Link>
                   <Link to="/users" className="nav-link"><FontAwesomeIcon icon={faUsers} /> Users</Link>
                   <Link to="/deactivations" className="nav-link"><FontAwesomeIcon icon={faClipboardList} /> Deactivations</Link>

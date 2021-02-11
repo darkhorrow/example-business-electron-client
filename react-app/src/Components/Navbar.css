@@ -18,3 +18,21 @@ button.close:hover {
     border: 1px solid rgba(41,43,44,0.2) !important;
     border-radius: .4em !important;
 }
+
+.navbar-roles-division {
+    border-left: 1px solid whitesmoke;
+    border-right: 1px solid whitesmoke;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+@media (max-width:991px){
+    .navbar-roles-division {
+        height: 1px;
+        background-color: #e5e5e5;
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+  }
