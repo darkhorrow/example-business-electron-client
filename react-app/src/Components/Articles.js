@@ -6,14 +6,28 @@ import Spinner from 'react-bootstrap/Spinner'
 import { Modal, Button, Form } from 'react-bootstrap';
 
 import ItemService from '../Service/ItemService';
+import SupplierService from '../Service/SupplierService';
+import PriceReductionService from '../Service/PriceReductionService';
+
+import AppAlert from './Alerts/AppAlert';
+
 import './Articles.css';
 
 class Articles extends React.Component {
+  constructor(props){
+    super(props);
+    this.alertElement = React.createRef();
+  }
 
   state = {
     isLoading: true,
     items: null,
-    itemSelected: null
+    suppliers: null,
+    priceReductions: null,
+    itemSelected: null,
+    showEditModal: false,
+    errorMessage: null,
+    errorType: null
   }
 
   async componentDidMount() {
@@ -21,13 +35,32 @@ class Articles extends React.Component {
       this.setState({
         items: response.data,
         isLoading: false,
-        showEditModal: false
+      })
+    });
+
+    SupplierService.getAllSuppliers().then(response => {
+      this.setState({
+        suppliers: response.data,
+      })
+    });
+
+    PriceReductionService.getAllPriceReduction().then(response => {
+      this.setState({
+        priceReductions: response.data,
       })
     });
   }
 
   editItem = () => {
-    this.handleShowEdit();
+    if(this.state.itemSelected) {
+      this.handleShowEdit();
+    } else {
+      this.setState({
+        errorType: "warning",
+        errorMessage: "Select an item to edit"
+      })
+      this.alertElement.current.open();
+    }
   }
 
   handleCloseEdit = () => {
@@ -44,29 +77,61 @@ class Articles extends React.Component {
       const dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
       return(
         <Form>
-          <Form.Group controlId="exampleForm.ControlInput1">
+          <Form.Group controlId="editItemForm.code">
             <Form.Label>Item Code</Form.Label>
             <Form.Control type="text" placeholder={this.state.itemSelected.code} readOnly />
           </Form.Group>
-          <Form.Group controlId="exampleForm.ControlSelect3">
+          <Form.Group controlId="editItemForm.description">
             <Form.Label>Item Description</Form.Label>
             <Form.Control type="text" defaultValue={this.state.itemSelected.description}/>
           </Form.Group>
-          <Form.Group controlId="exampleForm.ControlSelect1">
+          <Form.Group controlId="editItemForm.state">
             <Form.Label>Item State</Form.Label>
             <Form.Control as="select">
               <option>ACTIVE</option>
               <option>DISCONTINUED</option>
             </Form.Control>
           </Form.Group>
-          <Form.Group controlId="exampleForm.ControlInput2">
-            <Form.Label>Item Code</Form.Label>
+          <Form.Group controlId="editItemForm.creationDate">
+            <Form.Label>Item Creation Date</Form.Label>
             <Form.Control type="date" defaultValue={dateString} />
           </Form.Group>
-          <Form.Group controlId="exampleForm.ControlSelect2">
-            <Form.Label>Example multiple select</Form.Label>
+          <Form.Group controlId="editItemForm.suppliers">
+            <Form.Label>Item Suppliers</Form.Label>
             <Form.Control as="select" multiple>
+              {this.state.suppliers.map((supplier, i) => {
+                  if(this.state.itemSelected.suppliers.length < 1) {
+                    return <option key={'s'+i} >{supplier.name}</option>
+                  }
 
+                  const result = this.state.itemSelected.suppliers.map((itemSupplier) => {
+                    if(itemSupplier.name === supplier.name) {
+                      return <option key={'s'+i} selected>{supplier.name}</option>
+                    } else {
+                      return <option key={'s'+i} >{supplier.name}</option>
+                    }
+                  });
+                  return result;
+              })}
+            </Form.Control>
+          </Form.Group>
+          <Form.Group controlId="editItemForm.priceReductions">
+            <Form.Label>Item Price Reductions</Form.Label>
+            <Form.Control as="select" multiple>
+              {this.state.priceReductions.map((priceReduction, i) => {
+                  if(this.state.itemSelected.priceReductions.length < 1) {
+                    return <option key={'pr'+i} >{priceReduction.code}</option>
+                  }
+
+                  const result = this.state.itemSelected.priceReductions.map((itemPriceReduction) => {
+                    if(itemPriceReduction.code === priceReduction.code) {
+                      return <option key={'pr'+i} selected>{priceReduction.code}</option>
+                    } else {
+                      return <option key={'pr'+i} >{priceReduction.code}</option>
+                    }
+                  });
+                  return result;
+              })}
             </Form.Control>
           </Form.Group>
         </Form>
@@ -142,9 +207,10 @@ class Articles extends React.Component {
           </Modal.Body>
           <Modal.Footer className="bg-dark">
             <Button variant="secondary" onClick={this.handleCloseEdit}>Cancel</Button>
-            <Button variant="primary">Log out</Button>
+            <Button variant="primary">Edit item</Button>
           </Modal.Footer>
         </Modal>
+        <AppAlert variant={this.state.errorType} alertMessage={this.state.errorMessage} ref={this.alertElement}/>
       </div>
     );
   }
