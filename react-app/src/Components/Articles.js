@@ -75,6 +75,7 @@ class Articles extends React.Component {
     if(this.state.itemSelected) {
       const date = new Date(Date.parse(this.state.itemSelected.creationDate));
       const dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
+      const isActive = this.state.itemSelected.state === "ACTIVE";
       return(
         <Form>
           <Form.Group controlId="editItemForm.code">
@@ -88,8 +89,17 @@ class Articles extends React.Component {
           <Form.Group controlId="editItemForm.state">
             <Form.Label>Item State</Form.Label>
             <Form.Control as="select">
-              <option>ACTIVE</option>
-              <option>DISCONTINUED</option>
+              {isActive ?
+                  (<>
+                  <option selected>ACTIVE</option>
+                  <option>DISCONTINUED</option>
+                  </>)
+                  :
+                  (<>
+                  <option>ACTIVE</option>
+                  <option selected>DISCONTINUED</option>
+                  </>)
+              }
             </Form.Control>
           </Form.Group>
           <Form.Group controlId="editItemForm.creationDate">
