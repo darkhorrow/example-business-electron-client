@@ -64,9 +64,14 @@ class Login extends React.Component {
       sessionStorage.setItem('token', response.data.token)
       this.props.history.push("/home", user);
     }).catch(error => {
-      const type = error.response.status === 401 ? "danger" : "warning";
-      this.setState({errorMessage: error.response.data.message, errorType: type});
-      this.alertElement.current.open();
+      if(error.response) {
+        const type = error.response.status === 401 ? "danger" : "warning";
+        this.setState({errorMessage: error.response.data.message, errorType: type});
+        this.alertElement.current.open();
+      } else {
+        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
+        this.alertElement.current.open();
+      }
     })
   }
 }

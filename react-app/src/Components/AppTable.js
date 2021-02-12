@@ -20,7 +20,8 @@ class AppTable extends React.Component {
 
   async componentDidMount() {
     this.setState({
-      isLoading: false
+      isLoading: false,
+      keyRowSelected: null
     });
   }
 
@@ -35,15 +36,15 @@ class AppTable extends React.Component {
   renderList() {
     return (
           <>
-          <AppTableActionsBar elementName={this.props.elementName} />
+          <AppTableActionsBar elementName={this.props.elementName} onEdit={this.props.onEdit}/>
           <BootstrapTable 
           keyField={this.props.id} 
           data={this.props.elements} 
           columns={this.props.columns} 
           pagination={paginationFactory()} 
           selectRow={this.props.selection} 
-          bordered={false} 
-          bootstrap4 
+          bordered={false}
+          bootstrap4
           />
           </>
     );
