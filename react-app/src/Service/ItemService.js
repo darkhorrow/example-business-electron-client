@@ -12,4 +12,8 @@ export default class ItemService {
             item
         }});
     }
+
+    static async removeItem(code) {
+        return axios.delete(baseURL + '/' + code);
+    }
 }

@@ -17,7 +17,7 @@ class AppTableActionsBar extends React.Component {
             </ButtonGroup>
             <ButtonGroup aria-label="Second group">
                 <Button variant="secondary" onClick={this.props.onEdit}><FontAwesomeIcon icon={faEdit} className="text-warning"/> Edit {name}</Button> 
-                <Button variant="secondary"><FontAwesomeIcon icon={faTrashAlt} className="text-danger"/> Remove {name}</Button>
+                <Button variant="secondary" onClick={this.props.onDelete}><FontAwesomeIcon icon={faTrashAlt} className="text-danger"/> Remove {name}</Button>
             </ButtonGroup>
         </ButtonToolbar>
         );
