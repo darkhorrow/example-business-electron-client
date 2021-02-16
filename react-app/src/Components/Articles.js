@@ -230,9 +230,7 @@ class Articles extends React.Component {
     });
 
     const item = Object.fromEntries(new FormData(event.target));
-    item.priceReductions = this.state.itemSelected.priceReductions;
     item.suppliers = suppliersObjects;
-    item.creationDate += 'T' + this.state.itemSelected.creationDate.split('T')[1];
 
     ItemService.editItem(item).then(response => {
       window.location.reload();

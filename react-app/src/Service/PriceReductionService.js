@@ -6,4 +6,12 @@ export default class PriceReductionService {
     static async getAllPriceReduction() {
         return axios.get(baseURL);
     }
+    
+    static async addPriceReduction(priceReduction) {
+        return axios.post(baseURL, priceReduction);
+    }
+
+    static async editPriceReduction(priceReduction) {
+        return axios.get(baseURL + '/' + priceReduction.code, priceReduction);
+    }
 }

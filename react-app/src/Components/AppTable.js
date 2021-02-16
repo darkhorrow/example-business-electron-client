@@ -36,7 +36,13 @@ class AppTable extends React.Component {
   renderList() {
     return (
           <>
-          <AppTableActionsBar elementName={this.props.elementName} onEdit={this.props.onEdit} onDelete={this.props.onDelete} onAdd={this.props.onAdd}/>
+          <AppTableActionsBar 
+          elementName={this.props.elementName} 
+          onEdit={this.props.onEdit} 
+          onDelete={this.props.onDelete} 
+          onAdd={this.props.onAdd} 
+          excludeActions={this.props.excludeActions}/>
+          
           <BootstrapTable 
           keyField={this.props.id} 
           data={this.props.elements} 
