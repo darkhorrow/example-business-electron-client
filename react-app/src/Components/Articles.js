@@ -7,7 +7,6 @@ import { Modal, Button, Form } from 'react-bootstrap';
 
 import ItemService from '../Service/ItemService';
 import SupplierService from '../Service/SupplierService';
-import PriceReductionService from '../Service/PriceReductionService';
 
 import AppAlert from './Alerts/AppAlert';
 
@@ -23,7 +22,6 @@ class Articles extends React.Component {
     isLoading: true,
     items: null,
     suppliers: [],
-    priceReductions: null,
     itemSelected: null,
     showEditModal: false,
     showDeleteModal: false,
@@ -44,12 +42,6 @@ class Articles extends React.Component {
     SupplierService.getAllSuppliers().then(response => {
       this.setState({
         suppliers: response.data,
-      })
-    });
-
-    PriceReductionService.getAllPriceReduction().then(response => {
-      this.setState({
-        priceReductions: response.data,
       })
     });
   }
@@ -109,8 +101,6 @@ class Articles extends React.Component {
 
   renderEditModal() {
     if(this.state.itemSelected) {
-      const date = new Date(Date.parse(this.state.itemSelected.creationDate));
-      const dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
       const isActive = this.state.itemSelected.state === "ACTIVE";
 
       return(
@@ -145,7 +135,7 @@ class Articles extends React.Component {
           </Form.Group>
           <Form.Group controlId="editItemForm.creationDate">
             <Form.Label>Item Creation Date</Form.Label>
-            <Form.Control type="date" defaultValue={dateString} name="creationDate"/>
+            <Form.Control type="datetime-local" defaultValue={this.state.itemSelected.creationDate} name="creationDate"/>
           </Form.Group>
 
           <Form.Group controlId="editItemForm.suppliers">
@@ -171,6 +161,7 @@ class Articles extends React.Component {
   }
 
   renderAddModal() {
+    const date = new Date();
     return(
       <Form onSubmit={this.handleAddSubmit} id="add-form">
         <Form.Group controlId="addItemForm.code">
@@ -194,7 +185,7 @@ class Articles extends React.Component {
         </Form.Group>
         <Form.Group controlId="addItemForm.creationDate">
           <Form.Label>Item Creation Date</Form.Label>
-          <Form.Control type="date" defaultValue={Date.now().toString()} name="creationDate"/>
+          <Form.Control type="datetime-local" defaultValue={date.toISOString().split('Z')[0]} name="creationDate"/>
         </Form.Group>
 
         <Form.Group controlId="addItemForm.suppliers">
@@ -290,7 +281,6 @@ class Articles extends React.Component {
 
     const item = Object.fromEntries(new FormData(event.target));
     item.suppliers = suppliersObjects;
-    item.creationDate += 'T00:00:00.000';
 
     ItemService.addItem(item).then(response => {
       window.location.reload();
