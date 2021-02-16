@@ -13,7 +13,7 @@ class AppTableActionsBar extends React.Component {
         return (
         <ButtonToolbar aria-label="Toolbar" className="mb-2">
             <ButtonGroup className="mr-2" aria-label="First group">
-                <Button variant="secondary"><FontAwesomeIcon icon={faPlus} className="text-success"/> Add {name}</Button>
+                <Button variant="secondary" onClick={this.props.onAdd}><FontAwesomeIcon icon={faPlus} className="text-success"/> Add {name}</Button>
             </ButtonGroup>
             <ButtonGroup aria-label="Second group">
                 <Button variant="secondary" onClick={this.props.onEdit}><FontAwesomeIcon icon={faEdit} className="text-warning"/> Edit {name}</Button> 

@@ -22,11 +22,12 @@ class Articles extends React.Component {
   state = {
     isLoading: true,
     items: null,
-    suppliers: null,
+    suppliers: [],
     priceReductions: null,
     itemSelected: null,
     showEditModal: false,
     showDeleteModal: false,
+    showAddModal: false,
     errorMessage: null,
     errorType: null,
     suppliersSelected: []
@@ -77,6 +78,10 @@ class Articles extends React.Component {
     }
   }
 
+  addItem = () => {
+    this.handleShowAdd();
+  }
+
   handleCloseEdit = () => {
     this.setState({suppliersSelected: []});
     this.setState({showEditModal: false});
@@ -86,12 +91,20 @@ class Articles extends React.Component {
     this.setState({showDeleteModal: false});
   }
 
+  handleCloseAdd = () => {
+    this.setState({showAddModal: false});
+  }
+
   handleShowEdit() {
     this.setState({showEditModal: true});
   }
 
   handleShowDelete() {
     this.setState({showDeleteModal: true});
+  }
+
+  handleShowAdd() {
+    this.setState({showAddModal: true});
   }
 
   renderEditModal() {
@@ -105,6 +118,10 @@ class Articles extends React.Component {
           <Form.Group controlId="editItemForm.code">
             <Form.Label>Item Code</Form.Label>
             <Form.Control type="text" defaultValue={this.state.itemSelected.code} placeholder={this.state.itemSelected.code} readOnly name="code"/>
+          </Form.Group>
+          <Form.Group controlId="editItemForm.price">
+            <Form.Label>Item Price</Form.Label>
+            <Form.Control type="number" defaultValue={this.state.itemSelected.price} name="price"/>
           </Form.Group>
           <Form.Group controlId="editItemForm.description">
             <Form.Label>Item Description</Form.Label>
@@ -153,6 +170,49 @@ class Articles extends React.Component {
     }
   }
 
+  renderAddModal() {
+    return(
+      <Form onSubmit={this.handleAddSubmit} id="add-form">
+        <Form.Group controlId="addItemForm.code">
+          <Form.Label>Item Code</Form.Label>
+          <Form.Control type="text" placeholder="i.e 123456789" name="code"/>
+        </Form.Group>
+        <Form.Group controlId="addItemForm.price">
+            <Form.Label>Item Price</Form.Label>
+            <Form.Control type="number" placeholder="i.e 15,3 or 15.3" name="price" step=".01"/>
+          </Form.Group>
+        <Form.Group controlId="addItemForm.description">
+          <Form.Label>Item Description</Form.Label>
+          <Form.Control type="text" placeholder="i.e White comfy chair" name="description"/>
+        </Form.Group>
+        <Form.Group controlId="addItemForm.state">
+          <Form.Label>Item State</Form.Label>
+          <Form.Control as="select" name="state">
+              <option selected>ACTIVE</option>
+              <option>DISCONTINUED</option>
+          </Form.Control>
+        </Form.Group>
+        <Form.Group controlId="addItemForm.creationDate">
+          <Form.Label>Item Creation Date</Form.Label>
+          <Form.Control type="date" defaultValue={Date.now().toString()} name="creationDate"/>
+        </Form.Group>
+
+        <Form.Group controlId="addItemForm.suppliers">
+          <Form.Label>Item Suppliers</Form.Label>
+          {this.state.suppliers.map((supplier, i) => {
+            return <Form.Check type={'checkbox'} id={i + '-check'} label={supplier.name} onChange={this.handleEditSuppliersChange} value={supplier.name} name="suppliers"/>;    
+          })}
+        </Form.Group>
+      </Form>
+    );
+  }
+
+  renderDeleteModal() {
+    if(this.state.itemSelected) {
+      return(<>The item {this.state.itemSelected.code} will be removed. Do you want to procceed?</>);
+    }
+  }
+
   handleEditSuppliersChange = (event) => {
     const target = event.target;
     var value = target.value;
@@ -163,12 +223,6 @@ class Articles extends React.Component {
         if(index > -1) {
           this.state.suppliersSelected.splice(index, 1);
         }
-    }
-  }
-
-  renderDeleteModal() {
-    if(this.state.itemSelected) {
-      return(<>The item {this.state.itemSelected.code} will be removed. Do you want to procceed?</>);
     }
   }
 
@@ -190,9 +244,6 @@ class Articles extends React.Component {
     item.creationDate += 'T' + this.state.itemSelected.creationDate.split('T')[1];
 
     ItemService.editItem(item).then(response => {
-      this.setState({errorMessage: 'The item was edited successfully', errorType: 'success'});
-      this.alertElement.current.open();
-      this.handleCloseEdit();
       window.location.reload();
     }).catch(error => {
       if(error.response) {
@@ -211,8 +262,38 @@ class Articles extends React.Component {
     event.preventDefault();
     this.handleCloseDelete();
     ItemService.removeItem(this.state.itemSelected.code).then(response => {
-      this.setState({errorMessage: 'The item was removed successfully', errorType: 'success'});
-      this.alertElement.current.open();
+      window.location.reload();
+    }).catch(error => {
+      if(error.response) {
+        this.handleCloseDelete();
+        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
+        this.alertElement.current.open();
+      } else {
+        this.handleCloseDelete();
+        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
+        this.alertElement.current.open();
+      }
+    });
+  }
+
+  handleAddSubmit = (event) => {
+    event.preventDefault();
+    const suppliersObjects = [];
+
+    this.state.suppliers.forEach(supplier => {
+      this.state.suppliersSelected.forEach(selectedSupplier => {
+        if(selectedSupplier === supplier.name) {
+          suppliersObjects.push(supplier);
+        }
+      });
+    });
+
+    const item = Object.fromEntries(new FormData(event.target));
+    item.suppliers = suppliersObjects;
+    item.creationDate += 'T00:00:00.000';
+
+    ItemService.addItem(item).then(response => {
+      window.location.reload();
     }).catch(error => {
       if(error.response) {
         this.handleCloseDelete();
@@ -283,6 +364,7 @@ class Articles extends React.Component {
             elementName={'item'}
             onEdit={this.editItem}
             onDelete={this.deleteItem}
+            onAdd={this.addItem}
             />
           </div>
         </div>
@@ -311,6 +393,21 @@ class Articles extends React.Component {
             <Button onClick={this.handleDeleteSubmit} variant="danger">Remove item</Button>
           </Modal.Footer>
         </Modal>
+        <AppAlert variant={this.state.errorType} alertMessage={this.state.errorMessage} ref={this.alertElement}/>
+
+        <Modal show={this.state.showAddModal} onHide={this.handleCloseAdd} className="text-light" id="add-modal">
+          <Modal.Header closeButton className="bg-dark">
+          <Modal.Title>Create item</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="bg-dark">
+            {this.renderAddModal()}
+          </Modal.Body>
+          <Modal.Footer className="bg-dark">
+            <Button variant="secondary" onClick={this.handleCloseAdd}>Cancel</Button>
+            <Button type="submit" variant="primary" form="add-form">Create item</Button>
+          </Modal.Footer>
+        </Modal>
+
         <AppAlert variant={this.state.errorType} alertMessage={this.state.errorMessage} ref={this.alertElement}/>
       </div>
     );

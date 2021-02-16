@@ -14,4 +14,8 @@ export default class ItemService {
     static async removeItem(code) {
         return axios.delete(baseURL + '/' + code);
     }
+
+    static async addItem(item) {
+        return axios.post(baseURL, item);
+    }
 }
