@@ -28,7 +28,8 @@ class Articles extends React.Component {
     showEditModal: false,
     showDeleteModal: false,
     errorMessage: null,
-    errorType: null
+    errorType: null,
+    suppliersSelected: []
   }
 
   async componentDidMount() {
@@ -77,6 +78,7 @@ class Articles extends React.Component {
   }
 
   handleCloseEdit = () => {
+    this.setState({suppliersSelected: []});
     this.setState({showEditModal: false});
   }
 
@@ -97,8 +99,9 @@ class Articles extends React.Component {
       const date = new Date(Date.parse(this.state.itemSelected.creationDate));
       const dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
       const isActive = this.state.itemSelected.state === "ACTIVE";
+
       return(
-        <Form onSubmit={this.handleSumbit} id="edit-form">
+        <Form onSubmit={this.handleEditSubmit} id="edit-form">
           <Form.Group controlId="editItemForm.code">
             <Form.Label>Item Code</Form.Label>
             <Form.Control type="text" defaultValue={this.state.itemSelected.code} placeholder={this.state.itemSelected.code} readOnly name="code"/>
@@ -127,46 +130,39 @@ class Articles extends React.Component {
             <Form.Label>Item Creation Date</Form.Label>
             <Form.Control type="date" defaultValue={dateString} name="creationDate"/>
           </Form.Group>
+
           <Form.Group controlId="editItemForm.suppliers">
             <Form.Label>Item Suppliers</Form.Label>
-            <Form.Control as="select" multiple name="suppliers">
-              {this.state.suppliers.map((supplier, i) => {
+            {this.state.suppliers.map((supplier, i) => {
                   if(this.state.itemSelected.suppliers.length < 1) {
-                    return <option key={'s'+i} >{supplier.name}</option>
+                    return  (<Form.Check type={'checkbox'} id={i + '-check'} label={supplier.name} onChange={this.handleEditSuppliersChange} value={supplier.name} name="suppliers"/>);
                   }
 
                   const result = this.state.itemSelected.suppliers.map((itemSupplier) => {
                     if(itemSupplier.name === supplier.name) {
-                      return <option key={'s'+i} selected>{supplier.name}</option>
+                      return (<Form.Check type={'checkbox'} id={i + '-check'} label={supplier.name} checked disabled onChange={this.handleEditSuppliersChange} value={supplier.name} name="suppliers"/>);
                     } else {
-                      return <option key={'s'+i} >{supplier.name}</option>
+                      return (<Form.Check type={'checkbox'} id={i + '-check'} label={supplier.name} onChange={this.handleEditSuppliersChange} value={supplier.name} name="suppliers"/>);
                     }
                   });
                   return result;
               })}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="editItemForm.priceReductions">
-            <Form.Label>Item Price Reductions</Form.Label>
-            <Form.Control as="select" multiple name="priceReductions">
-              {this.state.priceReductions.map((priceReduction, i) => {
-                  if(this.state.itemSelected.priceReductions.length < 1) {
-                    return <option key={'pr'+i} >{priceReduction.code}</option>
-                  }
-
-                  const result = this.state.itemSelected.priceReductions.map((itemPriceReduction) => {
-                    if(itemPriceReduction.code === priceReduction.code) {
-                      return <option key={'pr'+i} selected>{priceReduction.code}</option>
-                    } else {
-                      return <option key={'pr'+i} >{priceReduction.code}</option>
-                    }
-                  });
-                  return result;
-              })}
-            </Form.Control>
           </Form.Group>
         </Form>
       );
+    }
+  }
+
+  handleEditSuppliersChange = (event) => {
+    const target = event.target;
+    var value = target.value;
+    if(target.checked){
+        this.state.suppliersSelected.push(value);
+    }else{
+        const index = this.state.suppliersSelected.indexOf(value);
+        if(index > -1) {
+          this.state.suppliersSelected.splice(index, 1);
+        }
     }
   }
 
@@ -176,10 +172,39 @@ class Articles extends React.Component {
     }
   }
 
-  handleSumbit = (event) => {
+  handleEditSubmit = (event) => {
     event.preventDefault();
+    const suppliersObjects = [];
 
-    const item = JSON.stringify(Object.fromEntries(new FormData(event.target)));
+    this.state.suppliers.forEach(supplier => {
+      this.state.suppliersSelected.forEach(selectedSupplier => {
+        if(selectedSupplier === supplier.name) {
+          suppliersObjects.push(supplier);
+        }
+      });
+    });
+
+    const item = Object.fromEntries(new FormData(event.target));
+    item.priceReductions = this.state.itemSelected.priceReductions;
+    item.suppliers = suppliersObjects;
+    item.creationDate += 'T' + this.state.itemSelected.creationDate.split('T')[1];
+
+    ItemService.editItem(item).then(response => {
+      this.setState({errorMessage: 'The item was edited successfully', errorType: 'success'});
+      this.alertElement.current.open();
+      this.handleCloseEdit();
+      window.location.reload();
+    }).catch(error => {
+      if(error.response) {
+        this.handleCloseDelete();
+        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
+        this.alertElement.current.open();
+      } else {
+        this.handleCloseDelete();
+        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
+        this.alertElement.current.open();
+      }
+    });
   }
 
   handleDeleteSubmit = (event) => {

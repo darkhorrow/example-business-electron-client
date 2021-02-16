@@ -8,9 +8,7 @@ export default class ItemService {
     }
 
     static async editItem(item) {
-        return axios.put(baseURL + item.code, { body: {
-            item
-        }});
+        return axios.put(baseURL + '/' + item.code, item);
     }
 
     static async removeItem(code) {
