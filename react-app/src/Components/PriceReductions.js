@@ -1,6 +1,5 @@
 import React from "react";
 
-import axios from 'axios';
 import AppTable from './AppTable';
 
 import Spinner from 'react-bootstrap/Spinner'

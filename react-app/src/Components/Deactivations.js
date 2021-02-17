@@ -52,7 +52,13 @@ class Users extends React.Component {
       <div className="deactivations-dark pt-5">
         <div className="container">
           <div className="row-fluid py-5">
-            <AppTable id={'deactivationReason'} elements={this.state.deactivations} columns={columns} selection={selectRow} elementName={'deactivation'}/>
+            <AppTable 
+            id={'deactivationReason'} 
+            elements={this.state.deactivations} 
+            columns={columns} 
+            selection={selectRow} 
+            elementName={'deactivation'} 
+            excludeActions={['add', 'edit', 'delete']} />
           </div>
         </div>
       </div>

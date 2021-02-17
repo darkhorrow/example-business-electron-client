@@ -1,6 +1,5 @@
 import React from "react";
 
-import axios from 'axios';
 import AppTable from './AppTable';
 
 import Spinner from 'react-bootstrap/Spinner'
@@ -17,7 +16,7 @@ class Suppliers extends React.Component {
     super(props);
     this.alertElement = React.createRef();
   }
-  
+
   state = {
     isLoading: true,
     suppliers: null,

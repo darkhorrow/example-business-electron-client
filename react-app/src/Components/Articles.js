@@ -381,7 +381,6 @@ class Articles extends React.Component {
             <Button onClick={this.handleDeleteSubmit} variant="danger">Remove item</Button>
           </Modal.Footer>
         </Modal>
-        <AppAlert variant={this.state.errorType} alertMessage={this.state.errorMessage} ref={this.alertElement}/>
 
         <Modal show={this.state.showAddModal} onHide={this.handleCloseAdd} className="text-light" id="add-modal">
           <Modal.Header closeButton className="bg-dark">
