@@ -267,7 +267,7 @@ class PriceReductions extends React.Component {
               </Modal.Body>
               <Modal.Footer className="bg-dark">
                 <Button variant="secondary" onClick={this.handleCloseAddModal}>Cancel</Button>
-                <Button type="submit" variant="primary" form="add-form">Create item</Button>
+                <Button type="submit" variant="primary" form="add-form">Create price reduction</Button>
               </Modal.Footer>
             </Modal>
 
@@ -280,7 +280,7 @@ class PriceReductions extends React.Component {
               </Modal.Body>
               <Modal.Footer className="bg-dark">
                 <Button variant="secondary" onClick={this.handleCloseEditModal}>Cancel</Button>
-                <Button type="submit" variant="primary" form="edit-form">Edit item</Button>
+                <Button type="submit" variant="primary" form="edit-form">Edit price reduction</Button>
               </Modal.Footer>
             </Modal>
 
