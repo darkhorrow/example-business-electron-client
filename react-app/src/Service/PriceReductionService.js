@@ -12,6 +12,6 @@ export default class PriceReductionService {
     }
 
     static async editPriceReduction(priceReduction) {
-        return axios.get(baseURL + '/' + priceReduction.code, priceReduction);
+        return axios.put(baseURL + '/' + priceReduction.code, priceReduction);
     }
 }
