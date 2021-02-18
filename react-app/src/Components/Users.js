@@ -6,6 +6,8 @@ import AppTable from './AppTable';
 import Spinner from 'react-bootstrap/Spinner'
 import { Modal, Button, Form } from 'react-bootstrap';
 
+import Auth from '../Security/Auth';
+
 import UserService from '../Service/UserService';
 
 import AppAlert from './Alerts/AppAlert';
@@ -27,6 +29,10 @@ class Users extends React.Component {
   }
 
   async componentDidMount() {
+    if(Auth.getRole() !== 'ADMIN') {
+      this.props.history.push("/home");
+    }
+
     UserService.getAllUsers().then(response => {
       this.setState({
         users: response.data,

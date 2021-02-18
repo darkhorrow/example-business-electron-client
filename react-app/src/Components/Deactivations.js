@@ -5,6 +5,8 @@ import AppTable from './AppTable';
 
 import Spinner from 'react-bootstrap/Spinner'
 
+import Auth from '../Security/Auth';
+
 import './Deactivations.css';
 
 class Users extends React.Component {
@@ -15,8 +17,11 @@ class Users extends React.Component {
   }
 
   async componentDidMount() {
+    if(Auth.getRole() !== 'ADMIN') {
+      this.props.history.push("/home");
+    }
+
     axios.get('http://localhost:8080/deactivations').then(response => {
-        console.log(response);
         this.setState({
             deactivations: response.data,
             isLoading: false
