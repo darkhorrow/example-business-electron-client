@@ -16,9 +16,7 @@ class Home extends React.Component {
 
   async componentDidMount() {
     this.setState({
-      isLoading: false,
-      messageOfTheDay: null,
-      quoteAuthor: null
+      isLoading: false
     });
 
     this.quoteOfTheDay();
@@ -38,14 +36,14 @@ class Home extends React.Component {
         <div className="container">
           <div className="row">
             <div className="jumbotron bg-dark text-light">
-              <h1 className="display-4">Welcome back, </h1>
+              <h1 className="display-4">Welcome back, <b>{sessionStorage.getItem('username')}</b></h1>
               <p className="lead">This is the main page of Example Business application.</p>
               <p className="lead">You can manipulate Items, Suppliers, Price reductions and more! Click a link on the navbar above and start!</p>
               <hr className="my-4"/>
               <h5><FontAwesomeIcon icon={faQuoteLeft}/> <b>Quote of the day</b> <FontAwesomeIcon icon={faQuoteRight} /></h5>
               <blockquote className="blockquote">
-                <p className="mb-0">{this.state.messageOfTheDay}</p>
-                <footer className="blockquote-footer">{this.state.quoteAuthor}</footer>
+                <p className="mb-0">{localStorage.getItem('qotd')}</p>
+                <footer className="blockquote-footer">{localStorage.getItem('qotd_author')}</footer>
               </blockquote>
             </div>
           </div>
@@ -55,16 +53,15 @@ class Home extends React.Component {
   }
 
   quoteOfTheDay() {
-    if(this.state.messageOfTheDay == null) {
-      /*
-      axios.get('https://quotes.rest/qod?language=en').then(response => {
-      this.setState({
-        messageOfTheDay: response.data.contents.quotes[0].quote,
-        quoteAuthor: response.data.contents.quotes[0].author
+    if(!localStorage.getItem('qotd_day') ||(new Date() - new Date(localStorage.getItem('qotd_day'))) > (24 * 60 * 60 * 1000)) {
+      var instance = axios.create();
+      
+      delete instance.defaults.headers.common['Authorization'];
+      instance.get('https://quotes.rest/qod?language=en').then(response => {
+        localStorage.setItem('qotd', response.data.contents.quotes[0].quote);
+        localStorage.setItem('qotd_author', response.data.contents.quotes[0].author);
+        localStorage.setItem('qotd_day', new Date());
       });
-
-    }); 
-      */
     }  
   }
 }

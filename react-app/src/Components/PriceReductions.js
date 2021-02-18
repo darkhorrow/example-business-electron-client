@@ -161,7 +161,6 @@ class PriceReductions extends React.Component {
   }
 
   renderEditModal() {
-    const date = new Date();
     if(!this.state.priceReductionSelected) {
       return null;
     }
@@ -178,7 +177,7 @@ class PriceReductions extends React.Component {
           </Form.Group>
         <Form.Group controlId="priceReduction.startDate">
           <Form.Label>Price Reduction Start Date</Form.Label>
-          <Form.Control type="datetime-local" defaultValue={date.toISOString().split('Z')[0]} name="startDate" defaultValue={this.state.priceReductionSelected.startDate} step="any"/>
+          <Form.Control type="datetime-local" name="startDate" defaultValue={this.state.priceReductionSelected.startDate} step="any"/>
         </Form.Group>
         <Form.Group controlId="priceReduction.endDate">
           <Form.Label>Price Reduction End Date</Form.Label>

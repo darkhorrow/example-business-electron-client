@@ -63,7 +63,8 @@ class Login extends React.Component {
     }).then(response => {
       sessionStorage.setItem('token', response.data.token);
       sessionStorage.setItem('role', response.data.role);
-      this.props.history.push("/home", user);
+      sessionStorage.setItem('username', JSON.parse(user).username);
+      this.props.history.push("/home");
     }).catch(error => {
       if(error.response) {
         const type = error.response.status === 401 ? "danger" : "warning";
