@@ -2,7 +2,7 @@ import React from "react";
 
 import {ButtonToolbar, ButtonGroup, Button} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faEdit, faTrashAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faEdit, faTrashAlt, faInfoCircle, faClipboardList } from '@fortawesome/free-solid-svg-icons'
 
 import Auth from '../Security/Auth';
 
@@ -53,8 +53,16 @@ class AppTableActionsBar extends React.Component {
         return this.props.excludeActions.includes('delete') ? null : <Button variant="secondary" onClick={this.props.onDelete}><FontAwesomeIcon icon={faTrashAlt} className="text-danger"/> Remove {name}</Button>;
     }
 
-    render(){
+    renderItemDeactivation() {
         const name = this.props.elementName;
+        if(name !== 'item' || !Auth.isLoggedIn()) {
+            return null;
+        }
+
+        return <Button variant="secondary" onClick={this.props.onDeactivate}><FontAwesomeIcon icon={faClipboardList} className="text-dark"/> Deactivate {name}</Button>;
+    }
+
+    render(){
         return (
         <ButtonToolbar aria-label="Toolbar" className="mb-2">
             <ButtonGroup className="mr-2" aria-label="First group">
@@ -64,6 +72,7 @@ class AppTableActionsBar extends React.Component {
                 {this.renderAddAction()}
             </ButtonGroup>
             <ButtonGroup aria-label="Third group">
+                {this.renderItemDeactivation()}
                 {this.renderEditAction()}
                 {this.renderDeleteAction()}
             </ButtonGroup>

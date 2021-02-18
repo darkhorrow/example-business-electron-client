@@ -28,6 +28,7 @@ class Articles extends React.Component {
     showEditModal: false,
     showDeleteModal: false,
     showAddModal: false,
+    showDeactivateModal: false,
     showDetailsModal: false,
     errorMessage: null,
     errorType: null,
@@ -89,6 +90,18 @@ class Articles extends React.Component {
     }
   }
 
+  deactivateItem = () => {
+    if(this.state.itemSelected) {
+      this.handleShowDeactivate();
+    } else {
+      this.setState({
+        errorType: "warning",
+        errorMessage: "Select an item to deactivate"
+      })
+      this.alertElement.current.open();
+    }
+  }
+
   handleCloseEdit = () => {
     this.setState({suppliersSelected: []});
     this.setState({showEditModal: false});
@@ -106,6 +119,10 @@ class Articles extends React.Component {
     this.setState({showDetailsModal: false});
   }
 
+  handleCloseDeactivate = () => {
+    this.setState({showDeactivateModal: false});
+  }
+
   handleShowEdit() {
     this.setState({showEditModal: true});
   }
@@ -121,6 +138,11 @@ class Articles extends React.Component {
   handleShowDetails() {
     this.setState({showDetailsModal: true});
   }
+
+  handleShowDeactivate() {
+    this.setState({showDeactivateModal: true});
+  }
+
 
   renderEditModal() {
     if(this.state.itemSelected) {
@@ -248,7 +270,7 @@ class Articles extends React.Component {
           <Form.Control type="datetime-local" defaultValue={this.state.itemSelected.creationDate} readOnly/>
         </Form.Group>
         <Form.Group controlId="detailsItemForm.suppliers">
-          <Form.Label>Example multiple select</Form.Label>
+          <Form.Label>Item Suppliers</Form.Label>
           <Form.Control as="select" multiple>
             {this.state.itemSelected.suppliers.map(supplier => {
             return <option>{supplier.name} ({supplier.country})</option>
@@ -256,7 +278,7 @@ class Articles extends React.Component {
           </Form.Control>
         </Form.Group>
         <Form.Group controlId="detailsItemForm.priceReductions">
-          <Form.Label>Example multiple select</Form.Label>
+          <Form.Label>Item Price Reductions</Form.Label>
           <Form.Control as="select" multiple>
             {this.state.itemSelected.priceReductions.map(priceReduction => {
             return <option>{priceReduction.code} | {priceReduction.amountDeducted}€ | ({priceReduction.startDate} - {priceReduction.endDate})</option>
@@ -270,6 +292,19 @@ class Articles extends React.Component {
   renderDeleteModal() {
     if(this.state.itemSelected) {
       return(<>The item {this.state.itemSelected.code} will be removed. Do you want to procceed?</>);
+    }
+  }
+
+  renderDeactivateModal() {
+    if(this.state.itemSelected) {
+      return (
+        <Form onSubmit={this.handleDeactivateSubmit} id="deactivate-form">
+          <Form.Group controlId="deactivateItemForm.reason">
+            <Form.Label>Deactivation Reason</Form.Label>
+            <Form.Control type="text" placeholder="i.e Not affordable to sell due to its low demand right now" name="deactivationReason" />
+          </Form.Group>
+        </Form>
+      );
     }
   }
 
@@ -364,6 +399,27 @@ class Articles extends React.Component {
     });
   }
 
+  handleDeactivateSubmit = (event) => {
+    event.preventDefault();
+
+    const deactivation = Object.fromEntries(new FormData(event.target));
+
+    this.handleCloseDeactivate();
+    ItemService.deactivateItem(this.state.itemSelected, deactivation).then(response => {
+      window.location.reload();
+    }).catch(error => {
+      if(error.response) {
+        this.handleCloseDelete();
+        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
+        this.alertElement.current.open();
+      } else {
+        this.handleCloseDelete();
+        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
+        this.alertElement.current.open();
+      }
+    });
+  }
+
   render(){
     return this.state.isLoading ? this.renderLoadScreen() : this.renderLoginPage();
   }
@@ -438,6 +494,7 @@ class Articles extends React.Component {
             onDelete={this.deleteItem}
             onAdd={this.addItem}
             onDetails={this.showDetails}
+            onDeactivate={this.deactivateItem}
             visibleByRoles={toolbarPermissions} 
             filterOptions={filterStateOptions}
             />
@@ -491,6 +548,19 @@ class Articles extends React.Component {
           </Modal.Body>
           <Modal.Footer className="bg-dark">
             <Button variant="secondary" onClick={this.handleCloseDetails}>Close</Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal show={this.state.showDeactivateModal} onHide={this.handleCloseDeactivate} className="text-light" id="deactivate-modal">
+          <Modal.Header closeButton className="bg-dark">
+          <Modal.Title>Deactivate item</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="bg-dark">
+            {this.renderDeactivateModal()}
+          </Modal.Body>
+          <Modal.Footer className="bg-dark">
+            <Button variant="secondary" onClick={this.handleCloseDeactivate}>Cancel</Button>
+            <Button type="submit" variant="danger" form="deactivate-form">Deactivate item</Button>
           </Modal.Footer>
         </Modal>
 

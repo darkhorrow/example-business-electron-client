@@ -11,6 +11,10 @@ export default class ItemService {
         return axios.put(baseURL + '/' + item.code, item);
     }
 
+    static async deactivateItem(item, deactivationReason) {
+        return axios.put(baseURL + '/deactivate/' + item.code, deactivationReason);
+    }
+
     static async removeItem(code) {
         return axios.delete(baseURL + '/' + code);
     }
