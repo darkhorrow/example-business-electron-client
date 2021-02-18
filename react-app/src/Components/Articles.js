@@ -340,11 +340,11 @@ class Articles extends React.Component {
       window.location.reload();
     }).catch(error => {
       if(error.response) {
-        this.handleCloseDelete();
+        this.handleCloseEdit();
         this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
         this.alertElement.current.open();
       } else {
-        this.handleCloseDelete();
+        this.handleCloseEdit();
         this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
         this.alertElement.current.open();
       }
@@ -353,7 +353,6 @@ class Articles extends React.Component {
 
   handleDeleteSubmit = (event) => {
     event.preventDefault();
-    this.handleCloseDelete();
     ItemService.removeItem(this.state.itemSelected.code).then(response => {
       window.location.reload();
     }).catch(error => {
@@ -388,11 +387,11 @@ class Articles extends React.Component {
       window.location.reload();
     }).catch(error => {
       if(error.response) {
-        this.handleCloseDelete();
+        this.handleCloseAdd();
         this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
         this.alertElement.current.open();
       } else {
-        this.handleCloseDelete();
+        this.handleCloseAdd();
         this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
         this.alertElement.current.open();
       }
@@ -409,11 +408,11 @@ class Articles extends React.Component {
       window.location.reload();
     }).catch(error => {
       if(error.response) {
-        this.handleCloseDelete();
+        this.handleCloseDeactivate();
         this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
         this.alertElement.current.open();
       } else {
-        this.handleCloseDelete();
+        this.handleCloseDeactivate();
         this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
         this.alertElement.current.open();
       }
@@ -421,14 +420,14 @@ class Articles extends React.Component {
   }
 
   render(){
-    return this.state.isLoading ? this.renderLoadScreen() : this.renderLoginPage();
+    return this.state.isLoading ? this.renderLoadScreen() : this.renderPage();
   }
 
   renderLoadScreen() {
     return <Spinner animation="grow" />;
   }
 
-  renderLoginPage() {
+  renderPage() {
     const filterStateOptions = {
       'ACTIVE': 'ACTIVE',
       'DISCONTINUED': 'DISCONTINUED'

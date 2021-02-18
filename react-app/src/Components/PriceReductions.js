@@ -97,6 +97,7 @@ class PriceReductions extends React.Component {
     const priceReduction = Object.fromEntries(new FormData(event.target));
 
     this.state.items.forEach(item => {
+      console.log(Number(this.state.itemSelected));
       if(item.code === Number(this.state.itemSelected)) {
         priceReduction.item = item;
       }
@@ -106,11 +107,11 @@ class PriceReductions extends React.Component {
       window.location.reload();
     }).catch(error => {
       if(error.response) {
-        this.handleCloseAddModal();
+        this.handleCloseEditModal();
         this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
         this.alertElement.current.open();
       } else {
-        this.handleCloseAddModal();
+        this.handleCloseEditModal();
         this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
         this.alertElement.current.open();
       }
@@ -204,14 +205,14 @@ class PriceReductions extends React.Component {
   }
 
   render(){
-    return this.state.isLoading ? this.renderLoadScreen() : this.renderLoginPage();
+    return this.state.isLoading ? this.renderLoadScreen() : this.renderPage();
   }
 
   renderLoadScreen() {
     return <Spinner animation="grow" />;
   }
 
-  renderLoginPage() {
+  renderPage() {
     const columns = [{
       dataField: 'code',
       text: 'Price Reduction Code',

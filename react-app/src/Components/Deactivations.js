@@ -30,14 +30,14 @@ class Users extends React.Component {
   }
 
   render(){
-    return this.state.isLoading ? this.renderLoadScreen() : this.renderLoginPage();
+    return this.state.isLoading ? this.renderLoadScreen() : this.renderPage();
   }
 
   renderLoadScreen() {
     return <Spinner animation="grow" />;
   }
 
-  renderLoginPage() {
+  renderPage() {
     const columns = [{
       dataField: 'deactivationReason',
       text: 'Deactivation Reason',
