@@ -10,6 +10,8 @@ import SupplierService from '../Service/SupplierService';
 
 import AppAlert from './Alerts/AppAlert';
 
+import { selectFilter } from 'react-bootstrap-table2-filter';
+
 import './Articles.css';
 
 class Articles extends React.Component {
@@ -371,6 +373,11 @@ class Articles extends React.Component {
   }
 
   renderLoginPage() {
+    const filterStateOptions = {
+      'ACTIVE': 'ACTIVE',
+      'DISCONTINUED': 'DISCONTINUED'
+    };
+
     const columns = [{
       dataField: 'code',
       text: 'Item Code',
@@ -386,7 +393,11 @@ class Articles extends React.Component {
     }, {
       dataField: 'state',
       text: 'Item State',
-      sort: true
+      sort: true,
+      formatter: cell => filterStateOptions[cell],
+      filter: selectFilter({
+        options: filterStateOptions
+      })
     }, {
       dataField: 'creationDate',
       text: 'Item Creation Date',
@@ -411,7 +422,7 @@ class Articles extends React.Component {
       add: ['USER', 'ADMIN'],
       edit: ['USER', 'ADMIN'],
       delete: ['ADMIN']
-    }
+    };
 
     return (
       <div className="articles-dark pt-5">
@@ -427,7 +438,8 @@ class Articles extends React.Component {
             onDelete={this.deleteItem}
             onAdd={this.addItem}
             onDetails={this.showDetails}
-            visibleByRoles={toolbarPermissions}
+            visibleByRoles={toolbarPermissions} 
+            filterOptions={filterStateOptions}
             />
           </div>
         </div>

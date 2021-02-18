@@ -6,9 +6,11 @@ import Spinner from 'react-bootstrap/Spinner';
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import filterFactory from 'react-bootstrap-table2-filter';
 
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
 
 import './AppTable.css';
 
@@ -52,6 +54,7 @@ class AppTable extends React.Component {
           columns={this.props.columns} 
           pagination={paginationFactory()} 
           selectRow={this.props.selection} 
+          filter={filterFactory()} 
           bordered={false}
           bootstrap4
           />
