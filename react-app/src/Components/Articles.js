@@ -340,6 +340,12 @@ class Articles extends React.Component {
       }
     };
 
+    const toolbarPermissions = {
+      add: ['USER', 'ADMIN'],
+      edit: ['USER', 'ADMIN'],
+      delete: ['ADMIN']
+    }
+
     return (
       <div className="articles-dark pt-5">
         <div className="container">
@@ -353,6 +359,7 @@ class Articles extends React.Component {
             onEdit={this.editItem}
             onDelete={this.deleteItem}
             onAdd={this.addItem}
+            visibleByRoles={toolbarPermissions}
             />
           </div>
         </div>

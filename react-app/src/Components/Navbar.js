@@ -6,6 +6,7 @@ import { faHome, faUser, faBoxes, faTruck, faTags, faUsers, faClipboardList } fr
 import { Link, withRouter } from 'react-router-dom';
 import { Navbar, Nav, Modal, Button } from 'react-bootstrap';
 
+import Auth from '../Security/Auth';
 
 import './Navbar.css';
 
@@ -31,8 +32,19 @@ class AppNavbar extends React.Component {
 
   handleLogOut() {
     sessionStorage.removeItem('token');
+    sessionStorage.removeItem('role');
     this.handleClose();
     this.props.history.push("/login");
+  }
+
+  renderAdminNavbar() {
+    return Auth.getRole() === 'ADMIN' ? (
+      <>
+      <div className="navbar-roles-division"></div>
+      <Link to="/users" className="nav-link"><FontAwesomeIcon icon={faUsers} /> Users</Link>
+      <Link to="/deactivations" className="nav-link"><FontAwesomeIcon icon={faClipboardList} /> Deactivations</Link>
+      </>
+    ) : null;
   }
 
   render(){
@@ -46,9 +58,7 @@ class AppNavbar extends React.Component {
                   <Link to="/items" className="nav-link"><FontAwesomeIcon icon={faBoxes} /> Items</Link>
                   <Link to="/suppliers" className="nav-link"><FontAwesomeIcon icon={faTruck} /> Suppliers</Link>
                   <Link to="/price-reductions" className="nav-link"><FontAwesomeIcon icon={faTags} /> Price reductions</Link>
-                  <div className="navbar-roles-division"></div>
-                  <Link to="/users" className="nav-link"><FontAwesomeIcon icon={faUsers} /> Users</Link>
-                  <Link to="/deactivations" className="nav-link"><FontAwesomeIcon icon={faClipboardList} /> Deactivations</Link>
+                  {this.renderAdminNavbar()}
               </Nav>
               <Nav>
                 <Nav.Link onClick={this.handleShow}><FontAwesomeIcon icon={faUser} /> Logout</Nav.Link>

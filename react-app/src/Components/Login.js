@@ -61,7 +61,8 @@ class Login extends React.Component {
         'Content-Type': 'application/json'
       }
     }).then(response => {
-      sessionStorage.setItem('token', response.data.token)
+      sessionStorage.setItem('token', response.data.token);
+      sessionStorage.setItem('role', response.data.role);
       this.props.history.push("/home", user);
     }).catch(error => {
       if(error.response) {

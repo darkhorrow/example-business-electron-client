@@ -41,7 +41,9 @@ class AppTable extends React.Component {
           onEdit={this.props.onEdit} 
           onDelete={this.props.onDelete} 
           onAdd={this.props.onAdd} 
-          excludeActions={this.props.excludeActions}/>
+          excludeActions={this.props.excludeActions}
+          visibleByRoles={this.props.visibleByRoles}
+          />
           
           <BootstrapTable 
           keyField={this.props.id} 

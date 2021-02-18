@@ -4,11 +4,16 @@ import {ButtonToolbar, ButtonGroup, Button} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
+import Auth from '../Security/Auth';
+
 import './AppTableActionsBar.css';
 
 class AppTableActionsBar extends React.Component {
     renderAddAction() {
         const name = this.props.elementName;
+        if(this.props.visibleByRoles && !this.props.visibleByRoles.add.includes(Auth.getRole())) {
+            return null;
+        }
         if(!this.props.excludeActions) {
             return <Button variant="secondary" onClick={this.props.onAdd}><FontAwesomeIcon icon={faPlus} className="text-success"/> Add {name}</Button>;
         }
@@ -17,6 +22,9 @@ class AppTableActionsBar extends React.Component {
 
     renderEditAction() {
         const name = this.props.elementName;
+        if(this.props.visibleByRoles && !this.props.visibleByRoles.edit.includes(Auth.getRole())) {
+            return null;
+        }
         if(!this.props.excludeActions) {
             return <Button variant="secondary" onClick={this.props.onEdit}><FontAwesomeIcon icon={faEdit} className="text-warning"/> Edit {name}</Button>;
         }
@@ -25,6 +33,9 @@ class AppTableActionsBar extends React.Component {
 
     renderDeleteAction() {
         const name = this.props.elementName;
+        if(this.props.visibleByRoles && !this.props.visibleByRoles.delete.includes(Auth.getRole())) {
+            return null;
+        }
         if(!this.props.excludeActions) {
             return <Button variant="secondary" onClick={this.props.onDelete}><FontAwesomeIcon icon={faTrashAlt} className="text-danger"/> Remove {name}</Button>;
         }

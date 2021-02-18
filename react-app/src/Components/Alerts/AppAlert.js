@@ -6,7 +6,7 @@ import './AppAlert.css';
 
 class AppAlert extends React.Component {
     state = {
-        show: true
+        show: false
     }
 
     changeState = () => {this.setState({show: false})}
