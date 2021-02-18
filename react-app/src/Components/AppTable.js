@@ -41,6 +41,7 @@ class AppTable extends React.Component {
           onEdit={this.props.onEdit} 
           onDelete={this.props.onDelete} 
           onAdd={this.props.onAdd} 
+          onDetails={this.props.onDetails}
           excludeActions={this.props.excludeActions}
           visibleByRoles={this.props.visibleByRoles}
           />

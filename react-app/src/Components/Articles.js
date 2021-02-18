@@ -26,6 +26,7 @@ class Articles extends React.Component {
     showEditModal: false,
     showDeleteModal: false,
     showAddModal: false,
+    showDetailsModal: false,
     errorMessage: null,
     errorType: null,
     suppliersSelected: []
@@ -74,6 +75,18 @@ class Articles extends React.Component {
     this.handleShowAdd();
   }
 
+  showDetails = () => {
+    if(this.state.itemSelected) {
+      this.handleShowDetails();
+    } else {
+      this.setState({
+        errorType: "warning",
+        errorMessage: "Select an item to check its details"
+      })
+      this.alertElement.current.open();
+    }
+  }
+
   handleCloseEdit = () => {
     this.setState({suppliersSelected: []});
     this.setState({showEditModal: false});
@@ -87,6 +100,10 @@ class Articles extends React.Component {
     this.setState({showAddModal: false});
   }
 
+  handleCloseDetails = () => {
+    this.setState({showDetailsModal: false});
+  }
+
   handleShowEdit() {
     this.setState({showEditModal: true});
   }
@@ -97,6 +114,10 @@ class Articles extends React.Component {
 
   handleShowAdd() {
     this.setState({showAddModal: true});
+  }
+
+  handleShowDetails() {
+    this.setState({showDetailsModal: true});
   }
 
   renderEditModal() {
@@ -193,6 +214,52 @@ class Articles extends React.Component {
           {this.state.suppliers.map((supplier, i) => {
             return <Form.Check type={'checkbox'} id={i + '-check'} label={supplier.name} onChange={this.handleEditSuppliersChange} value={supplier.name} name="suppliers"/>;    
           })}
+        </Form.Group>
+      </Form>
+    );
+  }
+
+  renderDetailsModal() {
+    if(!this.state.itemSelected) {
+      return null;
+    }
+    return (
+      <Form id="details-form">
+        <Form.Group controlId="detailsItemForm.code">
+          <Form.Label>Item Code</Form.Label>
+          <Form.Control type="text" defaultValue={this.state.itemSelected.code} placeholder={this.state.itemSelected.code} readOnly />
+        </Form.Group>
+        <Form.Group controlId="detailsItemForm.price">
+          <Form.Label>Item Price</Form.Label>
+          <Form.Control type="number" defaultValue={this.state.itemSelected.price} readOnly />
+        </Form.Group>
+        <Form.Group controlId="detailsItemForm.description">
+          <Form.Label>Item Description</Form.Label>
+          <Form.Control type="text" defaultValue={this.state.itemSelected.description} readOnly />
+        </Form.Group>
+        <Form.Group controlId="detailsItemForm.state">
+          <Form.Label>Item State</Form.Label>
+          <Form.Control type="text" defaultValue={this.state.itemSelected.state} readOnly />
+        </Form.Group>
+        <Form.Group controlId="detailsItemForm.creationDate">
+          <Form.Label>Item Creation Date</Form.Label>
+          <Form.Control type="datetime-local" defaultValue={this.state.itemSelected.creationDate} readOnly/>
+        </Form.Group>
+        <Form.Group controlId="detailsItemForm.suppliers">
+          <Form.Label>Example multiple select</Form.Label>
+          <Form.Control as="select" multiple>
+            {this.state.itemSelected.suppliers.map(supplier => {
+            return <option>{supplier.name} ({supplier.country})</option>
+            })}
+          </Form.Control>
+        </Form.Group>
+        <Form.Group controlId="detailsItemForm.priceReductions">
+          <Form.Label>Example multiple select</Form.Label>
+          <Form.Control as="select" multiple>
+            {this.state.itemSelected.priceReductions.map(priceReduction => {
+            return <option>{priceReduction.code} | {priceReduction.amountDeducted}€ | ({priceReduction.startDate} - {priceReduction.endDate})</option>
+            })}
+          </Form.Control>
         </Form.Group>
       </Form>
     );
@@ -359,6 +426,7 @@ class Articles extends React.Component {
             onEdit={this.editItem}
             onDelete={this.deleteItem}
             onAdd={this.addItem}
+            onDetails={this.showDetails}
             visibleByRoles={toolbarPermissions}
             />
           </div>
@@ -399,6 +467,18 @@ class Articles extends React.Component {
           <Modal.Footer className="bg-dark">
             <Button variant="secondary" onClick={this.handleCloseAdd}>Cancel</Button>
             <Button type="submit" variant="primary" form="add-form">Create item</Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal show={this.state.showDetailsModal} onHide={this.handleCloseDetails} className="text-light" id="details-modal">
+          <Modal.Header closeButton className="bg-dark">
+          <Modal.Title>Item Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="bg-dark">
+            {this.renderDetailsModal()}
+          </Modal.Body>
+          <Modal.Footer className="bg-dark">
+            <Button variant="secondary" onClick={this.handleCloseDetails}>Close</Button>
           </Modal.Footer>
         </Modal>
 

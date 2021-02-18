@@ -2,13 +2,24 @@ import React from "react";
 
 import {ButtonToolbar, ButtonGroup, Button} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faEdit, faTrashAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 
 import Auth from '../Security/Auth';
 
 import './AppTableActionsBar.css';
 
 class AppTableActionsBar extends React.Component {
+    renderDetailsAction() {
+        const name = this.props.elementName;
+        if(this.props.visibleByRoles && !this.props.visibleByRoles.add.includes(Auth.getRole())) {
+            return null;
+        }
+        if(!this.props.excludeActions) {
+            return <Button variant="secondary" onClick={this.props.onDetails}><FontAwesomeIcon icon={faInfoCircle} className="text-info"/> Details of {name}</Button>;
+        }
+        return this.props.excludeActions.includes('details') ? null : <Button variant="secondary" onClick={this.props.onDetails}><FontAwesomeIcon icon={faInfoCircle} className="text-info"/> Details of {name}</Button>;
+    }
+
     renderAddAction() {
         const name = this.props.elementName;
         if(this.props.visibleByRoles && !this.props.visibleByRoles.add.includes(Auth.getRole())) {
@@ -47,9 +58,12 @@ class AppTableActionsBar extends React.Component {
         return (
         <ButtonToolbar aria-label="Toolbar" className="mb-2">
             <ButtonGroup className="mr-2" aria-label="First group">
+                {this.renderDetailsAction()}
+            </ButtonGroup>
+            <ButtonGroup className="mr-2" aria-label="Second group">
                 {this.renderAddAction()}
             </ButtonGroup>
-            <ButtonGroup aria-label="Second group">
+            <ButtonGroup aria-label="Third group">
                 {this.renderEditAction()}
                 {this.renderDeleteAction()}
             </ButtonGroup>

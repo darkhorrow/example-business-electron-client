@@ -177,7 +177,7 @@ class Suppliers extends React.Component {
             columns={columns} 
             selection={selectRow} 
             elementName={'supplier'} 
-            excludeActions={['delete']} 
+            excludeActions={['delete', 'details']} 
             onAdd={this.handleShowAddModal} 
             onEdit={this.editPriceReduction} 
             />

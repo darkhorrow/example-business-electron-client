@@ -174,7 +174,7 @@ class Users extends React.Component {
             columns={columns} 
             selection={selectRow} 
             elementName={'user'} 
-            excludeActions={['edit']} 
+            excludeActions={['edit', 'details']} 
             onAdd={this.handleShowAddModal}
             onDelete={this.deleteUser}
             />

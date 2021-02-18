@@ -252,7 +252,7 @@ class PriceReductions extends React.Component {
             columns={columns} 
             selection={selectRow} 
             elementName={'price reduction'} 
-            excludeActions={['delete']}
+            excludeActions={['delete', 'details']}
             onAdd={this.handleShowAddModal}
             onEdit={this.editPriceReduction}
             />

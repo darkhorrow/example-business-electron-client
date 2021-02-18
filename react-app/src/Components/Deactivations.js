@@ -63,7 +63,7 @@ class Users extends React.Component {
             columns={columns} 
             selection={selectRow} 
             elementName={'deactivation'} 
-            excludeActions={['add', 'edit', 'delete']} />
+            excludeActions={['add', 'edit', 'delete', 'details']} />
           </div>
         </div>
       </div>
