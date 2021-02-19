@@ -9,6 +9,8 @@ const ProtectedRoute = ({ component: Component, ...rest }) => (
             return (<Component {...props} />);
         }
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('role');
+        sessionStorage.removeItem('username');
         return(<Redirect to='/login' />);
     }} />
 )
