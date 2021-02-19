@@ -82,6 +82,9 @@ class Users extends React.Component {
         break;
       case 'add':
         this.addUser();
+        break;
+      default:
+        console.log('Invalid action performed');
     }
   }
 
@@ -92,6 +95,9 @@ class Users extends React.Component {
         break;
       case 'add':
         this.handleAddFormSubmit(event);
+        break;
+      default:
+        console.log('Invalid action performed');
     }
   }
 

@@ -1,15 +1,14 @@
 import React from "react";
 
 import axios from 'axios';
-import AppTable from './AppTable';
 
-import Spinner from 'react-bootstrap/Spinner'
+import AppTable from './AppTable';
 
 import Auth from '../Security/Auth';
 
 import './Deactivations.css';
 
-class Users extends React.Component {
+class Deactivations extends React.Component {
 
   state = {
     isLoading: true,
@@ -30,11 +29,7 @@ class Users extends React.Component {
   }
 
   render(){
-    return this.state.isLoading ? this.renderLoadScreen() : this.renderPage();
-  }
-
-  renderLoadScreen() {
-    return <Spinner animation="grow" />;
+    return this.state.isLoading ? null : this.renderPage();
   }
 
   renderPage() {
@@ -48,11 +43,6 @@ class Users extends React.Component {
       sort: true
     }];
 
-    const selectRow = {
-      mode: 'radio',
-      clickToSelect: true
-    };
-
     return (
       <div className="deactivations-dark pt-5">
         <div className="container">
@@ -61,7 +51,6 @@ class Users extends React.Component {
             id={'deactivationReason'} 
             elements={this.state.deactivations} 
             columns={columns} 
-            selection={selectRow} 
             elementName={'deactivation'} 
             excludeActions={['add', 'edit', 'delete', 'details']} />
           </div>
@@ -71,4 +60,4 @@ class Users extends React.Component {
   }
 }
 
-export default Users;
+export default Deactivations;
