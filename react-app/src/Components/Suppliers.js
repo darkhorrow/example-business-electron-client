@@ -1,9 +1,8 @@
 import React from "react";
 
-import AppTable from './AppTable';
-
-import Spinner from 'react-bootstrap/Spinner'
 import { Modal, Button, Form } from 'react-bootstrap';
+
+import AppTable from './AppTable';
 
 import SupplierService from '../Service/SupplierService';
 
@@ -29,27 +28,73 @@ class Suppliers extends React.Component {
         suppliers: response.data,
         isLoading: false,
       })
+    }).catch(error => {
+      this.renderAlert(error.response);
     });
   }
 
-  handleCloseAddModal = () => {
-    this.setState({showAddModal: false});
+  handleCloseModal = () => {
+    this.setState({showModal: false, itemSelected: null, action: null, modalTitle: null, modalButtonText: null});
   }
 
-  handleShowAddModal = () => {
-    this.setState({showAddModal: true});
-  }
-
-  handleCloseEditModal = () => {
-    this.setState({showEditModal: false});
-  }
-
-  handleShowEditModal = () => {
-    this.setState({showEditModal: true});
+  handleShowModal = () => {
+    this.setState({showModal: true});
   }
 
   handleItemChange = (event) => {
     this.setState({itemSelected: event.target.value});
+  }
+
+  editSupplier() {
+    if(this.state.supplierSelected) {
+      this.handleShowModal();
+      this.setState({
+        modalTitle: 'Edit Supplier',
+        modalButtonText: 'Edit Supplier',
+        action: 'edit'
+      });
+    } else {
+      this.setState({
+        errorType: "warning",
+        errorMessage: "Select a user to remove"
+      });
+      this.alertElement.current.open();
+    }
+  }
+
+  addSupplier() {
+    this.handleShowModal();
+    this.setState({
+      modalTitle: 'Create Supplier',
+      modalButtonText: 'Create Supplier',
+      action: 'add'
+    });
+  }
+
+  handleAction = (event) => {
+    switch(event.target.getAttribute('action')) {
+      case 'edit':
+        this.editSupplier();
+        break;
+      case 'add':
+        this.addSupplier();
+        break;
+      default:
+        console.log('Invalid action performed');
+    }
+  }
+
+  handleSubmit = (event) => {
+    switch(this.state.action) {
+      case 'edit':
+        this.handleEditFormSubmit(event);
+        break;
+      case 'add':
+        this.handleAddFormSubmit(event);
+        break;
+      default:
+        console.log('Invalid action performed');
+    }
   }
 
   handleAddFormSubmit = (event) => {
@@ -60,15 +105,7 @@ class Suppliers extends React.Component {
     SupplierService.addSupplier(supplier).then(response => {
       window.location.reload();
     }).catch(error => {
-      if(error.response) {
-        this.handleCloseAddModal();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseAddModal();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
+      this.renderAlert(error.response);
     });
   }
 
@@ -80,33 +117,13 @@ class Suppliers extends React.Component {
     SupplierService.editSupplier(supplier).then(response => {
       window.location.reload();
     }).catch(error => {
-      if(error.response) {
-        this.handleCloseEditModal();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseEditModal();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
+      this.renderAlert(error.response);
     });
-  }
-
-  editPriceReduction = () => {
-    if(this.state.supplierSelected) {
-      this.handleShowEditModal();
-    } else {
-      this.setState({
-        errorType: "warning",
-        errorMessage: "Select a price reduction to edit"
-      })
-      this.alertElement.current.open();
-    }
   }
 
   renderAddModal() {
     return (
-      <Form onSubmit={this.handleAddFormSubmit} id="add-form">
+      <Form onSubmit={this.handleAddFormSubmit} id="priceReductions">
         <Form.Group controlId="supplier.name">
           <Form.Label>Supplier Name</Form.Label>
           <Form.Control type="text" placeholder="i.e Example Provider S.L" name="name" />
@@ -125,7 +142,7 @@ class Suppliers extends React.Component {
     }
 
     return (
-      <Form onSubmit={this.handleEditFormSubmit} id="edit-form">
+      <Form onSubmit={this.handleEditFormSubmit} id="priceReductions">
         <Form.Group controlId="supplier.name">
           <Form.Label>Supplier Name</Form.Label>
           <Form.Control type="text" placeholder="i.e Example Provider S.L" defaultValue={this.state.supplierSelected.name} readOnly name="name" />
@@ -138,12 +155,31 @@ class Suppliers extends React.Component {
     );
   }
 
-  render(){
-    return this.state.isLoading ? this.renderLoadScreen() : this.renderPage();
+  renderAlert(errorResponse) {
+    if(errorResponse) {
+      this.handleCloseModal();
+      this.setState({errorMessage: errorResponse.data.message ? errorResponse.data.message : 'Unknown error found', errorType: 'danger'});
+      this.alertElement.current.open();
+    } else {
+      this.handleCloseModal();
+      this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
+      this.alertElement.current.open();
+    }
   }
 
-  renderLoadScreen() {
-    return <Spinner animation="grow" />;
+  renderModalBody() {
+    switch(this.state.action) {
+      case 'add':
+        return this.renderAddModal();
+      case 'edit':
+        return this.renderEditModal();
+      default:
+        return null;
+    }
+  }
+
+  render(){
+    return this.state.isLoading ? null : this.renderPage();
   }
 
   renderPage() {
@@ -178,33 +214,20 @@ class Suppliers extends React.Component {
             selection={selectRow} 
             elementName={'supplier'} 
             excludeActions={['delete', 'details']} 
-            onAdd={this.handleShowAddModal} 
-            onEdit={this.editPriceReduction} 
+            onAdd={this.handleAction} 
+            onEdit={this.handleAction} 
             />
 
-            <Modal show={this.state.showAddModal} onHide={this.handleCloseAddModal} className="text-light" id="add-modal">
+            <Modal show={this.state.showModal} onHide={this.handleCloseModal} className="text-light" id="users-modal">
               <Modal.Header closeButton className="bg-dark">
-              <Modal.Title>Create supplier</Modal.Title>
+                <Modal.Title>{this.state.modalTitle}</Modal.Title>
               </Modal.Header>
               <Modal.Body className="bg-dark">
-                {this.renderAddModal()}
+                {this.renderModalBody()}
               </Modal.Body>
               <Modal.Footer className="bg-dark">
-                <Button variant="secondary" onClick={this.handleCloseAddModal}>Cancel</Button>
-                <Button type="submit" variant="primary" form="add-form">Create supplier</Button>
-              </Modal.Footer>
-            </Modal>
-
-            <Modal show={this.state.showEditModal} onHide={this.handleCloseEditModal} className="text-light" id="edit-modal">
-              <Modal.Header closeButton className="bg-dark">
-              <Modal.Title>Edit supplier</Modal.Title>
-              </Modal.Header>
-              <Modal.Body className="bg-dark">
-                {this.renderEditModal()}
-              </Modal.Body>
-              <Modal.Footer className="bg-dark">
-                <Button variant="secondary" onClick={this.handleCloseEditModal}>Cancel</Button>
-                <Button type="submit" variant="primary" form="edit-form">Edit supplier</Button>
+                <Button variant="secondary" onClick={this.handleCloseModal}>Cancel</Button>
+                <Button type="submit" variant="primary" form="priceReductions">{this.state.modalButtonText}</Button>
               </Modal.Footer>
             </Modal>
 

@@ -15,9 +15,9 @@ class AppTableActionsBar extends React.Component {
             return null;
         }
         if(!this.props.excludeActions) {
-            return <Button variant="secondary" onClick={this.props.onDetails}><FontAwesomeIcon icon={faInfoCircle} className="text-info"/> Details of {name}</Button>;
+            return <Button variant="secondary" onClick={this.props.onDetails} action="details"><FontAwesomeIcon icon={faInfoCircle} className="text-info"/> Details of {name}</Button>;
         }
-        return this.props.excludeActions.includes('details') ? null : <Button variant="secondary" onClick={this.props.onDetails}><FontAwesomeIcon icon={faInfoCircle} className="text-info"/> Details of {name}</Button>;
+        return this.props.excludeActions.includes('details') ? null : <Button variant="secondary" onClick={this.props.onDetails} action="details"><FontAwesomeIcon icon={faInfoCircle} className="text-info"/> Details of {name}</Button>;
     }
 
     renderAddAction() {
@@ -26,9 +26,9 @@ class AppTableActionsBar extends React.Component {
             return null;
         }
         if(!this.props.excludeActions) {
-            return <Button variant="secondary" onClick={this.props.onAdd}><FontAwesomeIcon icon={faPlus} className="text-success"/> Add {name}</Button>;
+            return <Button variant="secondary" onClick={this.props.onAdd} action="add"><FontAwesomeIcon icon={faPlus} className="text-success"/> Add {name}</Button>;
         }
-        return this.props.excludeActions.includes('add') ? null : <Button variant="secondary" onClick={this.props.onAdd}><FontAwesomeIcon icon={faPlus} className="text-success"/> Add {name}</Button>;
+        return this.props.excludeActions.includes('add') ? null : <Button variant="secondary" onClick={this.props.onAdd} action="add"><FontAwesomeIcon icon={faPlus} className="text-success"/> Add {name}</Button>;
     }
 
     renderEditAction() {
@@ -37,9 +37,9 @@ class AppTableActionsBar extends React.Component {
             return null;
         }
         if(!this.props.excludeActions) {
-            return <Button variant="secondary" onClick={this.props.onEdit}><FontAwesomeIcon icon={faEdit} className="text-warning"/> Edit {name}</Button>;
+            return <Button variant="secondary" onClick={this.props.onEdit} action="edit"><FontAwesomeIcon icon={faEdit} className="text-warning"/> Edit {name}</Button>;
         }
-        return this.props.excludeActions.includes('edit') ? null : <Button variant="secondary" onClick={this.props.onEdit}><FontAwesomeIcon icon={faEdit} className="text-warning"/> Edit {name}</Button>;
+        return this.props.excludeActions.includes('edit') ? null : <Button variant="secondary" onClick={this.props.onEdit} action="edit"><FontAwesomeIcon icon={faEdit} className="text-warning"/> Edit {name}</Button>;
     }
 
     renderDeleteAction() {
@@ -48,9 +48,9 @@ class AppTableActionsBar extends React.Component {
             return null;
         }
         if(!this.props.excludeActions) {
-            return <Button variant="secondary" onClick={this.props.onDelete}><FontAwesomeIcon icon={faTrashAlt} className="text-danger"/> Remove {name}</Button>;
+            return <Button variant="secondary" onClick={this.props.onDelete} action="remove"><FontAwesomeIcon icon={faTrashAlt} className="text-danger" /> Remove {name}</Button>;
         }
-        return this.props.excludeActions.includes('delete') ? null : <Button variant="secondary" onClick={this.props.onDelete}><FontAwesomeIcon icon={faTrashAlt} className="text-danger"/> Remove {name}</Button>;
+        return this.props.excludeActions.includes('delete') ? null : <Button variant="secondary" onClick={this.props.onDelete} action="remove"><FontAwesomeIcon icon={faTrashAlt} className="text-danger"/> Remove {name}</Button>;
     }
 
     renderItemDeactivation() {
@@ -59,7 +59,7 @@ class AppTableActionsBar extends React.Component {
             return null;
         }
 
-        return <Button variant="secondary" onClick={this.props.onDeactivate}><FontAwesomeIcon icon={faClipboardList} className="text-dark"/> Deactivate {name}</Button>;
+        return <Button variant="secondary" onClick={this.props.onDeactivate}><FontAwesomeIcon icon={faClipboardList} className="text-dark" action="deactivate"/> Deactivate {name}</Button>;
     }
 
     render(){

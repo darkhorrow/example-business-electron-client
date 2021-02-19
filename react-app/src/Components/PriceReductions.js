@@ -1,9 +1,8 @@
 import React from "react";
 
-import AppTable from './AppTable';
-
-import Spinner from 'react-bootstrap/Spinner'
 import { Modal, Button, Form } from 'react-bootstrap';
+
+import AppTable from './AppTable';
 
 import PriceReductionService from '../Service/PriceReductionService';
 import ItemService from '../Service/ItemService';
@@ -22,8 +21,8 @@ class PriceReductions extends React.Component {
     isLoading: true,
     priceReductionSelected: null,
     priceReductions: null,
-    showAddModal: false,
-    showEditModal: false,
+    showModal: false,
+    action: null,
     items: [],
     itemSelected: null,
     errorMessage: null,
@@ -36,33 +35,81 @@ class PriceReductions extends React.Component {
         priceReductions: response.data,
         isLoading: false,
       })
+    }).catch(error => {
+      this.renderAlert(error.response);
     });
 
     ItemService.getAllItems().then(response => {
       this.setState({
         items: response.data
       })
+    }).catch(error => {
+      this.renderAlert(error.response);
     });
   }
 
-  handleCloseAddModal = () => {
-    this.setState({showAddModal: false, itemSelected: null});
+  handleCloseModal = () => {
+    this.setState({showModal: false, itemSelected: null, action: null, modalTitle: null, modalButtonText: null});
   }
 
-  handleShowAddModal = () => {
-    this.setState({showAddModal: true});
-  }
-
-  handleCloseEditModal = () => {
-    this.setState({showEditModal: false, itemSelected: null});
-  }
-
-  handleShowEditModal = () => {
-    this.setState({showEditModal: true});
+  handleShowModal = () => {
+    this.setState({showModal: true});
   }
 
   handleItemChange = (event) => {
     this.setState({itemSelected: event.target.value});
+  }
+
+  editPriceReduction() {
+    if(this.state.priceReductionSelected) {
+      this.handleShowModal();
+      this.setState({
+        modalTitle: 'Edit Price Reduction',
+        modalButtonText: 'Edit Price Reduction',
+        action: 'edit'
+      });
+    } else {
+      this.setState({
+        errorType: "warning",
+        errorMessage: "Select a user to remove"
+      });
+      this.alertElement.current.open();
+    }
+  }
+
+  addPriceReduction() {
+    this.handleShowModal();
+    this.setState({
+      modalTitle: 'Create Price Reduction',
+      modalButtonText: 'Create Price Reduction',
+      action: 'add'
+    });
+  }
+
+  handleAction = (event) => {
+    switch(event.target.getAttribute('action')) {
+      case 'edit':
+        this.editPriceReduction();
+        break;
+      case 'add':
+        this.addPriceReduction();
+        break;
+      default:
+        console.log('Invalid action performed');
+    }
+  }
+
+  handleSubmit = (event) => {
+    switch(this.state.action) {
+      case 'edit':
+        this.handleDeleteSubmit(event);
+        break;
+      case 'add':
+        this.handleAddFormSubmit(event);
+        break;
+      default:
+        console.log('Invalid action performed');
+    }
   }
 
   handleAddFormSubmit = (event) => {
@@ -79,15 +126,7 @@ class PriceReductions extends React.Component {
     PriceReductionService.addPriceReduction(priceReduction).then(response => {
       window.location.reload();
     }).catch(error => {
-      if(error.response) {
-        this.handleCloseAddModal();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseAddModal();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
+      this.renderAlert(error.response);
     });
   }
 
@@ -105,42 +144,22 @@ class PriceReductions extends React.Component {
     PriceReductionService.editPriceReduction(priceReduction).then(response => {
       window.location.reload();
     }).catch(error => {
-      if(error.response) {
-        this.handleCloseEditModal();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseEditModal();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
+      this.renderAlert(error.response);
     });
-  }
-
-  editPriceReduction = () => {
-    if(this.state.priceReductionSelected) {
-      this.handleShowEditModal();
-    } else {
-      this.setState({
-        errorType: "warning",
-        errorMessage: "Select a price reduction to edit"
-      })
-      this.alertElement.current.open();
-    }
   }
 
   renderAddModal() {
     const date = new Date();
 
     return (
-      <Form onSubmit={this.handleAddFormSubmit} id="add-form">
+      <Form onSubmit={this.handleAddFormSubmit} id="priceReductions">
         <Form.Group controlId="priceReduction.code">
           <Form.Label>Price Reduction Code</Form.Label>
           <Form.Control type="text" placeholder="i.e 123456789" name="code"/>
         </Form.Group>
         <Form.Group controlId="priceReduction.amountDeducted">
             <Form.Label>Price Reduction Amount Deducted</Form.Label>
-            <Form.Control type="number" placeholder="i.e 15,3 or 15.3" name="amountDeducted" step="any"/>
+            <Form.Control type="number" placeholder="i.e 15,3 or 15.3" name="amountDeducted" step="0.01"/>
           </Form.Group>
         <Form.Group controlId="priceReduction.startDate">
           <Form.Label>Price Reduction Start Date</Form.Label>
@@ -166,7 +185,7 @@ class PriceReductions extends React.Component {
     }
 
     return (
-      <Form onSubmit={this.handleEditFormSubmit} id="edit-form">
+      <Form onSubmit={this.handleEditFormSubmit} id="priceReductions">
         <Form.Group controlId="priceReduction.code">
           <Form.Label>Price Reduction Code</Form.Label>
           <Form.Control type="text" placeholder="i.e 123456789" defaultValue={this.state.priceReductionSelected.code} readOnly name="code"/>
@@ -203,12 +222,31 @@ class PriceReductions extends React.Component {
     );
   }
 
-  render(){
-    return this.state.isLoading ? this.renderLoadScreen() : this.renderPage();
+  renderAlert(errorResponse) {
+    if(errorResponse) {
+      this.handleCloseModal();
+      this.setState({errorMessage: errorResponse.data.message ? errorResponse.data.message : 'Unknown error found', errorType: 'danger'});
+      this.alertElement.current.open();
+    } else {
+      this.handleCloseModal();
+      this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
+      this.alertElement.current.open();
+    }
   }
 
-  renderLoadScreen() {
-    return <Spinner animation="grow" />;
+  renderModalBody() {
+    switch(this.state.action) {
+      case 'add':
+        return this.renderAddModal();
+      case 'edit':
+        return this.renderEditModal();
+      default:
+        return null;
+    }
+  }
+
+  render(){
+    return this.state.isLoading ? null : this.renderPage();
   }
 
   renderPage() {
@@ -252,33 +290,20 @@ class PriceReductions extends React.Component {
             selection={selectRow} 
             elementName={'price reduction'} 
             excludeActions={['delete', 'details']}
-            onAdd={this.handleShowAddModal}
-            onEdit={this.editPriceReduction}
+            onAdd={this.handleAction}
+            onEdit={this.handleAction}
             />
 
-            <Modal show={this.state.showAddModal} onHide={this.handleCloseAddModal} className="text-light" id="add-modal">
+            <Modal show={this.state.showModal} onHide={this.handleCloseModal} className="text-light" id="users-modal">
               <Modal.Header closeButton className="bg-dark">
-              <Modal.Title>Create price reduction</Modal.Title>
+                <Modal.Title>{this.state.modalTitle}</Modal.Title>
               </Modal.Header>
               <Modal.Body className="bg-dark">
-                {this.renderAddModal()}
+                {this.renderModalBody()}
               </Modal.Body>
               <Modal.Footer className="bg-dark">
-                <Button variant="secondary" onClick={this.handleCloseAddModal}>Cancel</Button>
-                <Button type="submit" variant="primary" form="add-form">Create price reduction</Button>
-              </Modal.Footer>
-            </Modal>
-
-            <Modal show={this.state.showEditModal} onHide={this.handleCloseEditModal} className="text-light" id="edit-modal">
-              <Modal.Header closeButton className="bg-dark">
-              <Modal.Title>Edit price reduction</Modal.Title>
-              </Modal.Header>
-              <Modal.Body className="bg-dark">
-                {this.renderEditModal()}
-              </Modal.Body>
-              <Modal.Footer className="bg-dark">
-                <Button variant="secondary" onClick={this.handleCloseEditModal}>Cancel</Button>
-                <Button type="submit" variant="primary" form="edit-form">Edit price reduction</Button>
+                <Button variant="secondary" onClick={this.handleCloseModal}>Cancel</Button>
+                <Button type="submit" variant="primary" form="priceReductions">{this.state.modalButtonText}</Button>
               </Modal.Footer>
             </Modal>
 
