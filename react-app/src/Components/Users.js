@@ -1,9 +1,8 @@
 import React from "react";
 
-import AppTable from './AppTable';
-
-import Spinner from 'react-bootstrap/Spinner'
 import { Modal, Button, Form } from 'react-bootstrap';
+
+import AppTable from './AppTable';
 
 import Auth from '../Security/Auth';
 
@@ -23,8 +22,8 @@ class Users extends React.Component {
     isLoading: true,
     users: null,
     userSelected: null,
-    showAddModal: false,
-    showDeleteModal: false
+    showModal: false, 
+    action: null
   }
 
   async componentDidMount() {
@@ -35,40 +34,68 @@ class Users extends React.Component {
     UserService.getAllUsers().then(response => {
       this.setState({
         users: response.data,
-        isLoading: false,
+        isLoading: false
       })
+    }).catch(error => {
+      this.renderAlert(error.response);
     });
   }
 
-  handleCloseAddModal = () => {
-    this.setState({showAddModal: false});
+  handleCloseModal = () => {
+    this.setState({showModal: false, action: null, modalTitle: null, modalButtonText: null});
   }
 
-  handleShowAddModal = () => {
-    this.setState({showAddModal: true});
+  handleShowModal = () => {
+    this.setState({showModal: true});
   }
 
-  handleCloseDeleteModal = () => {
-    this.setState({showDeleteModal: false});
-  }
-
-  handleShowDeleteModal = () => {
-    this.setState({showDeleteModal: true});
-  }
-
-  deleteUser = () => {
+  deleteUser() {
     if(this.state.userSelected) {
-      this.handleShowDeleteModal();
+      this.handleShowModal();
+      this.setState({
+        modalTitle: 'Remove User',
+        modalButtonText: 'Remove User',
+        action: 'remove'
+      });
     } else {
       this.setState({
         errorType: "warning",
-        errorMessage: "Select a price reduction to edit"
-      })
+        errorMessage: "Select a user to remove"
+      });
       this.alertElement.current.open();
     }
   }
 
-  handleAddFormSubmit = (event) => {
+  addUser() {
+    this.handleShowModal();
+    this.setState({
+      modalTitle: 'Create User',
+      modalButtonText: 'Create User',
+      action: 'add'
+    });
+  }
+
+  handleAction = (event) => {
+    switch(event.target.getAttribute('action')) {
+      case 'remove':
+        this.deleteUser();
+        break;
+      case 'add':
+        this.addUser();
+    }
+  }
+
+  handleSubmit = (event) => {
+    switch(this.state.action) {
+      case 'remove':
+        this.handleDeleteSubmit(event);
+        break;
+      case 'add':
+        this.handleAddFormSubmit(event);
+    }
+  }
+
+  handleAddFormSubmit(event) {
     event.preventDefault();
 
     const user = Object.fromEntries(new FormData(event.target));
@@ -76,45 +103,51 @@ class Users extends React.Component {
     UserService.addUser(user).then(response => {
       window.location.reload();
     }).catch(error => {
-      if(error.response) {
-        this.handleCloseAddModal();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseAddModal();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
+      this.renderAlert(error.response);
     });
   }
 
-  handleDeleteSubmit = (event) => {
+  handleDeleteSubmit(event) {
     event.preventDefault();
-    this.handleCloseDeleteModal();
     UserService.removeUser(this.state.userSelected.username).then(response => {
       window.location.reload();
     }).catch(error => {
-      if(error.response) {
-        this.handleCloseDeleteModal();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseDeleteModal();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
+      this.renderAlert(error.response);
     });
+  }
+
+  renderAlert(errorResponse) {
+    if(errorResponse) {
+      this.handleCloseModal();
+      this.setState({errorMessage: errorResponse.data.message ? errorResponse.data.message : 'Unknown error found', errorType: 'danger'});
+      this.alertElement.current.open();
+    } else {
+      this.handleCloseModal();
+      this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
+      this.alertElement.current.open();
+    }
+  }
+
+  renderModalBody() {
+    switch(this.state.action) {
+      case 'add':
+        return this.renderAddModal();
+      case 'remove':
+        return this.renderDeleteModal();
+      default:
+        return null;
+    }
   }
 
   renderDeleteModal() {
     if(this.state.userSelected) {
-      return(<>The user '{this.state.userSelected.username}' will be removed. Do you want to procceed?</>);
+      return(<Form onSubmit={this.handleSubmit} id="users">The user '{this.state.userSelected.username}' will be removed. Do you want to procceed?</Form>);
     }
   }
 
   renderAddModal() {
     return (
-      <Form onSubmit={this.handleAddFormSubmit} id="add-form">
+      <Form onSubmit={this.handleSubmit} id="users">
         <Form.Group controlId="user.name">
           <Form.Label>User Name</Form.Label>
           <Form.Control type="text" placeholder="i.e example.username" name="username" />
@@ -135,11 +168,7 @@ class Users extends React.Component {
   }
 
   render(){
-    return this.state.isLoading ? this.renderLoadScreen() : this.renderPage();
-  }
-
-  renderLoadScreen() {
-    return <Spinner animation="grow" />;
+    return this.state.isLoading ? null : this.renderPage();
   }
 
   renderPage() {
@@ -174,33 +203,20 @@ class Users extends React.Component {
             selection={selectRow} 
             elementName={'user'} 
             excludeActions={['edit', 'details']} 
-            onAdd={this.handleShowAddModal}
-            onDelete={this.deleteUser}
+            onAdd={this.handleAction}
+            onDelete={this.handleAction}
             />
 
-            <Modal show={this.state.showAddModal} onHide={this.handleCloseAddModal} className="text-light" id="add-modal">
+            <Modal show={this.state.showModal} onHide={this.handleCloseModal} className="text-light" id="users-modal">
               <Modal.Header closeButton className="bg-dark">
-              <Modal.Title>Create user</Modal.Title>
+                <Modal.Title>{this.state.modalTitle}</Modal.Title>
               </Modal.Header>
               <Modal.Body className="bg-dark">
-                {this.renderAddModal()}
+                {this.renderModalBody()}
               </Modal.Body>
               <Modal.Footer className="bg-dark">
-                <Button variant="secondary" onClick={this.handleCloseAddModal}>Cancel</Button>
-                <Button type="submit" variant="primary" form="add-form">Create user</Button>
-              </Modal.Footer>
-            </Modal>
-
-            <Modal show={this.state.showDeleteModal} onHide={this.handleCloseDeleteModal} className="text-light" id="delete-modal">
-              <Modal.Header closeButton className="bg-dark">
-              <Modal.Title>Remove user</Modal.Title>
-              </Modal.Header>
-              <Modal.Body className="bg-dark">
-                {this.renderDeleteModal()}
-              </Modal.Body>
-              <Modal.Footer className="bg-dark">
-                <Button variant="secondary" onClick={this.handleCloseDeleteModal}>Cancel</Button>
-                <Button onClick={this.handleDeleteSubmit} variant="danger">Remove user</Button>
+                <Button variant="secondary" onClick={this.handleCloseModal}>Cancel</Button>
+                <Button type="submit" variant="primary" form="users">{this.state.modalButtonText}</Button>
               </Modal.Footer>
             </Modal>
 
