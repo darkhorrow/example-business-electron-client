@@ -97,8 +97,7 @@ class PriceReductions extends React.Component {
     const priceReduction = Object.fromEntries(new FormData(event.target));
 
     this.state.items.forEach(item => {
-      console.log(Number(this.state.itemSelected));
-      if(item.code === Number(this.state.itemSelected)) {
+      if(item.code === Number(priceReduction.item)) {
         priceReduction.item = item;
       }
     });
