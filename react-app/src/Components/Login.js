@@ -2,9 +2,13 @@ import React from "react";
 
 import axios from 'axios';
 
+import { Redirect } from 'react-router-dom'
+
 import Spinner from 'react-bootstrap/Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserLock } from '@fortawesome/free-solid-svg-icons';
+
+import Auth from '../Security/Auth';
 
 import AppAlert from './Alerts/AppAlert';
 
@@ -37,6 +41,9 @@ class Login extends React.Component {
   }
 
   renderLoginPage() {
+    if(Auth.isLoggedIn()) {
+      return <Redirect to='/home' />;
+    }
     return (
       <div className="login-dark">
         <form onSubmit={this.handleSumbit}>
