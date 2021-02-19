@@ -1,16 +1,15 @@
 import React from "react";
 
-import AppTable from './AppTable';
-
-import Spinner from 'react-bootstrap/Spinner'
 import { Modal, Button, Form } from 'react-bootstrap';
+
+import { selectFilter } from 'react-bootstrap-table2-filter';
+
+import AppTable from './AppTable';
 
 import ItemService from '../Service/ItemService';
 import SupplierService from '../Service/SupplierService';
 
 import AppAlert from './Alerts/AppAlert';
-
-import { selectFilter } from 'react-bootstrap-table2-filter';
 
 import './Articles.css';
 
@@ -50,9 +49,35 @@ class Articles extends React.Component {
     });
   }
 
+  handleCloseModal = () => {
+    this.setState({showModal: false, action: null, modalTitle: null, modalButtonText: null, suppliersSelected: []});
+  }
+
+  handleShowModal = () => {
+    this.setState({showModal: true});
+  }
+
+  handleEditSuppliersChange = (event) => {
+    const target = event.target;
+    var value = target.value;
+    if(target.checked){
+        this.state.suppliersSelected.push(value);
+    }else{
+        const index = this.state.suppliersSelected.indexOf(value);
+        if(index > -1) {
+          this.state.suppliersSelected.splice(index, 1);
+        }
+    }
+  }
+
   editItem = () => {
     if(this.state.itemSelected) {
-      this.handleShowEdit();
+      this.handleShowModal();
+      this.setState({
+        modalTitle: 'Edit Item',
+        modalButtonText: 'Edit Item',
+        action: 'edit'
+      });
     } else {
       this.setState({
         errorType: "warning",
@@ -64,7 +89,12 @@ class Articles extends React.Component {
 
   deleteItem = () => {
     if(this.state.itemSelected) {
-      this.handleShowDelete();
+      this.handleShowModal();
+      this.setState({
+        modalTitle: 'Remove Item',
+        modalButtonText: 'Remove Item',
+        action: 'remove'
+      });
     } else {
       this.setState({
         errorType: "warning",
@@ -75,12 +105,22 @@ class Articles extends React.Component {
   }
 
   addItem = () => {
-    this.handleShowAdd();
+    this.handleShowModal();
+    this.setState({
+      modalTitle: 'Add Supplier',
+      modalButtonText: 'Add Supplier',
+      action: 'add'
+    });
   }
 
   showDetails = () => {
     if(this.state.itemSelected) {
-      this.handleShowDetails();
+      this.handleShowModal();
+      this.setState({
+        modalTitle: 'Item Details',
+        modalButtonText: 'Item Details',
+        action: 'details'
+      });
     } else {
       this.setState({
         errorType: "warning",
@@ -92,7 +132,12 @@ class Articles extends React.Component {
 
   deactivateItem = () => {
     if(this.state.itemSelected) {
-      this.handleShowDeactivate();
+      this.handleShowModal();
+      this.setState({
+        modalTitle: 'Deactivate Item',
+        modalButtonText: 'Deactivate Item',
+        action: 'deactivate'
+      });
     } else {
       this.setState({
         errorType: "warning",
@@ -102,61 +147,127 @@ class Articles extends React.Component {
     }
   }
 
-  handleCloseEdit = () => {
-    this.setState({suppliersSelected: []});
-    this.setState({showEditModal: false});
+  handleAction = (event) => {
+    switch(event.target.getAttribute('action')) {
+      case 'edit':
+        this.editItem();
+        break;
+      case 'add':
+        this.addItem();
+        break;
+      case 'remove':
+        this.deleteItem();
+        break;
+      case 'deactivate':
+        this.deactivateItem();
+        break;
+      case 'details':
+        this.showDetails();
+        break;
+      default:
+        console.log('Invalid action performed');
+    }
   }
 
-  handleCloseDelete = () => {
-    this.setState({showDeleteModal: false});
+  handleSubmit = (event) => {
+    switch(this.state.action) {
+      case 'edit':
+        this.handleEditFormSubmit(event);
+        break;
+      case 'add':
+        this.handleAddFormSubmit(event);
+        break;
+      case 'remove':
+        this.handleDeleteSubmit();
+        break;
+      case 'deactivate':
+        this.handleDeactivateSubmit();
+        break;
+      case 'details':
+        break;
+      default:
+        console.log('Invalid action performed');
+    }
   }
 
-  handleCloseAdd = () => {
-    this.setState({showAddModal: false});
+  handleEditSubmit = (event) => {
+    event.preventDefault();
+    const suppliersObjects = [];
+
+    this.state.suppliers.forEach(supplier => {
+      this.state.suppliersSelected.forEach(selectedSupplier => {
+        if(selectedSupplier === supplier.name) {
+          suppliersObjects.push(supplier);
+        }
+      });
+    });
+
+    const item = Object.fromEntries(new FormData(event.target));
+    item.suppliers = suppliersObjects;
+
+    ItemService.editItem(item).then(response => {
+      window.location.reload();
+    }).catch(error => {
+      this.renderAlert(error.response);
+    });
   }
 
-  handleCloseDetails = () => {
-    this.setState({showDetailsModal: false});
+  handleDeleteSubmit = (event) => {
+    event.preventDefault();
+    ItemService.removeItem(this.state.itemSelected.code).then(response => {
+      window.location.reload();
+    }).catch(error => {
+      this.renderAlert(error.response);
+    });
   }
 
-  handleCloseDeactivate = () => {
-    this.setState({showDeactivateModal: false});
+  handleAddSubmit = (event) => {
+    event.preventDefault();
+    const suppliersObjects = [];
+
+    this.state.suppliers.forEach(supplier => {
+      this.state.suppliersSelected.forEach(selectedSupplier => {
+        if(selectedSupplier === supplier.name) {
+          suppliersObjects.push(supplier);
+        }
+      });
+    });
+
+    const item = Object.fromEntries(new FormData(event.target));
+    item.suppliers = suppliersObjects;
+
+    ItemService.addItem(item).then(response => {
+      window.location.reload();
+    }).catch(error => {
+      this.renderAlert(error.response);
+    });
   }
 
-  handleShowEdit() {
-    this.setState({showEditModal: true});
-  }
+  handleDeactivateSubmit = (event) => {
+    event.preventDefault();
 
-  handleShowDelete() {
-    this.setState({showDeleteModal: true});
-  }
+    const deactivation = Object.fromEntries(new FormData(event.target));
 
-  handleShowAdd() {
-    this.setState({showAddModal: true});
+    ItemService.deactivateItem(this.state.itemSelected, deactivation).then(response => {
+      window.location.reload();
+    }).catch(error => {
+      this.renderAlert(error.response);
+    });
   }
-
-  handleShowDetails() {
-    this.setState({showDetailsModal: true});
-  }
-
-  handleShowDeactivate() {
-    this.setState({showDeactivateModal: true});
-  }
-
 
   renderEditModal() {
     if(this.state.itemSelected) {
       const isActive = this.state.itemSelected.state === "ACTIVE";
 
       return(
-        <Form onSubmit={this.handleEditSubmit} id="edit-form">
+        <Form onSubmit={this.handleEditSubmit} id="items">
           <Form.Group controlId="editItemForm.code">
             <Form.Label>Item Code</Form.Label>
             <Form.Control type="text" defaultValue={this.state.itemSelected.code} placeholder={this.state.itemSelected.code} readOnly name="code"/>
           </Form.Group>
           <Form.Group controlId="editItemForm.price">
             <Form.Label>Item Price</Form.Label>
-            <Form.Control type="number" defaultValue={this.state.itemSelected.price} name="price"/>
+            <Form.Control type="number" defaultValue={this.state.itemSelected.price} name="price" step="0.01"/>
           </Form.Group>
           <Form.Group controlId="editItemForm.description">
             <Form.Label>Item Description</Form.Label>
@@ -208,7 +319,7 @@ class Articles extends React.Component {
   renderAddModal() {
     const date = new Date();
     return(
-      <Form onSubmit={this.handleAddSubmit} id="add-form">
+      <Form onSubmit={this.handleAddSubmit} id="items">
         <Form.Group controlId="addItemForm.code">
           <Form.Label>Item Code</Form.Label>
           <Form.Control type="text" placeholder="i.e 123456789" name="code"/>
@@ -248,7 +359,7 @@ class Articles extends React.Component {
       return null;
     }
     return (
-      <Form id="details-form">
+      <Form id="items">
         <Form.Group controlId="detailsItemForm.code">
           <Form.Label>Item Code</Form.Label>
           <Form.Control type="text" defaultValue={this.state.itemSelected.code} placeholder={this.state.itemSelected.code} readOnly />
@@ -291,14 +402,14 @@ class Articles extends React.Component {
 
   renderDeleteModal() {
     if(this.state.itemSelected) {
-      return(<>The item {this.state.itemSelected.code} will be removed. Do you want to procceed?</>);
+      return(<Form onSubmit={this.handleDeleteSubmit} id="items">The item {this.state.itemSelected.code} will be removed. Do you want to procceed?</Form>);
     }
   }
 
   renderDeactivateModal() {
     if(this.state.itemSelected) {
       return (
-        <Form onSubmit={this.handleDeactivateSubmit} id="deactivate-form">
+        <Form onSubmit={this.handleDeactivateSubmit} id="items">
           <Form.Group controlId="deactivateItemForm.reason">
             <Form.Label>Deactivation Reason</Form.Label>
             <Form.Control type="text" placeholder="i.e Not affordable to sell due to its low demand right now" name="deactivationReason" />
@@ -308,123 +419,37 @@ class Articles extends React.Component {
     }
   }
 
-  handleEditSuppliersChange = (event) => {
-    const target = event.target;
-    var value = target.value;
-    if(target.checked){
-        this.state.suppliersSelected.push(value);
-    }else{
-        const index = this.state.suppliersSelected.indexOf(value);
-        if(index > -1) {
-          this.state.suppliersSelected.splice(index, 1);
-        }
+  renderAlert(errorResponse) {
+    if(errorResponse) {
+      this.handleCloseModal();
+      this.setState({errorMessage: errorResponse.data.message ? errorResponse.data.message : 'Unknown error found', errorType: 'danger'});
+      this.alertElement.current.open();
+    } else {
+      this.handleCloseModal();
+      this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
+      this.alertElement.current.open();
     }
   }
 
-  handleEditSubmit = (event) => {
-    event.preventDefault();
-    const suppliersObjects = [];
-
-    this.state.suppliers.forEach(supplier => {
-      this.state.suppliersSelected.forEach(selectedSupplier => {
-        if(selectedSupplier === supplier.name) {
-          suppliersObjects.push(supplier);
-        }
-      });
-    });
-
-    const item = Object.fromEntries(new FormData(event.target));
-    item.suppliers = suppliersObjects;
-
-    ItemService.editItem(item).then(response => {
-      window.location.reload();
-    }).catch(error => {
-      if(error.response) {
-        this.handleCloseEdit();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseEdit();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
-    });
-  }
-
-  handleDeleteSubmit = (event) => {
-    event.preventDefault();
-    ItemService.removeItem(this.state.itemSelected.code).then(response => {
-      window.location.reload();
-    }).catch(error => {
-      if(error.response) {
-        this.handleCloseDelete();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseDelete();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
-    });
-  }
-
-  handleAddSubmit = (event) => {
-    event.preventDefault();
-    const suppliersObjects = [];
-
-    this.state.suppliers.forEach(supplier => {
-      this.state.suppliersSelected.forEach(selectedSupplier => {
-        if(selectedSupplier === supplier.name) {
-          suppliersObjects.push(supplier);
-        }
-      });
-    });
-
-    const item = Object.fromEntries(new FormData(event.target));
-    item.suppliers = suppliersObjects;
-
-    ItemService.addItem(item).then(response => {
-      window.location.reload();
-    }).catch(error => {
-      if(error.response) {
-        this.handleCloseAdd();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseAdd();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
-    });
-  }
-
-  handleDeactivateSubmit = (event) => {
-    event.preventDefault();
-
-    const deactivation = Object.fromEntries(new FormData(event.target));
-
-    this.handleCloseDeactivate();
-    ItemService.deactivateItem(this.state.itemSelected, deactivation).then(response => {
-      window.location.reload();
-    }).catch(error => {
-      if(error.response) {
-        this.handleCloseDeactivate();
-        this.setState({errorMessage: error.response.data.message, errorType: 'danger'});
-        this.alertElement.current.open();
-      } else {
-        this.handleCloseDeactivate();
-        this.setState({errorMessage: "Connection to the server failed", errorType: "danger"});
-        this.alertElement.current.open();
-      }
-    });
+  renderModalBody() {
+    switch(this.state.action) {
+      case 'add':
+        return this.renderAddModal();
+      case 'edit':
+        return this.renderEditModal();
+      case 'remove':
+        return this.renderDeleteModal();
+      case 'deactivate':
+        return this.renderDeactivateModal();
+      case 'details':
+        return this.renderDetailsModal();
+      default:
+        return null;
+    }
   }
 
   render(){
-    return this.state.isLoading ? this.renderLoadScreen() : this.renderPage();
-  }
-
-  renderLoadScreen() {
-    return <Spinner animation="grow" />;
+    return this.state.isLoading ? null : this.renderPage();
   }
 
   renderPage() {
@@ -489,9 +514,9 @@ class Articles extends React.Component {
             columns={columns} 
             selection={selectRow} 
             elementName={'item'}
-            onEdit={this.editItem}
-            onDelete={this.deleteItem}
-            onAdd={this.addItem}
+            onEdit={this.handleAction}
+            onDelete={this.handleAction}
+            onAdd={this.handleAction}
             onDetails={this.showDetails}
             onDeactivate={this.deactivateItem}
             visibleByRoles={toolbarPermissions} 
@@ -499,67 +524,17 @@ class Articles extends React.Component {
             />
           </div>
         </div>
-        <Modal show={this.state.showEditModal} onHide={this.handleCloseEdit} className="text-light" id="edit-modal">
-          <Modal.Header closeButton className="bg-dark">
-          <Modal.Title>Edit item</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="bg-dark">
-            {this.renderEditModal()}
-          </Modal.Body>
-          <Modal.Footer className="bg-dark">
-            <Button variant="secondary" onClick={this.handleCloseEdit}>Cancel</Button>
-            <Button type="submit" variant="primary" form="edit-form">Edit item</Button>
-          </Modal.Footer>
-        </Modal>
 
-        <Modal show={this.state.showDeleteModal} onHide={this.handleCloseDelete} className="text-light" id="delete-modal">
+        <Modal show={this.state.showModal} onHide={this.handleCloseModal} className="text-light" id="users-modal">
           <Modal.Header closeButton className="bg-dark">
-          <Modal.Title>Remove item</Modal.Title>
+            <Modal.Title>{this.state.modalTitle}</Modal.Title>
           </Modal.Header>
           <Modal.Body className="bg-dark">
-            {this.renderDeleteModal()}
+            {this.renderModalBody()}
           </Modal.Body>
           <Modal.Footer className="bg-dark">
-            <Button variant="secondary" onClick={this.handleCloseDelete}>Cancel</Button>
-            <Button onClick={this.handleDeleteSubmit} variant="danger">Remove item</Button>
-          </Modal.Footer>
-        </Modal>
-
-        <Modal show={this.state.showAddModal} onHide={this.handleCloseAdd} className="text-light" id="add-modal">
-          <Modal.Header closeButton className="bg-dark">
-          <Modal.Title>Create item</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="bg-dark">
-            {this.renderAddModal()}
-          </Modal.Body>
-          <Modal.Footer className="bg-dark">
-            <Button variant="secondary" onClick={this.handleCloseAdd}>Cancel</Button>
-            <Button type="submit" variant="primary" form="add-form">Create item</Button>
-          </Modal.Footer>
-        </Modal>
-
-        <Modal show={this.state.showDetailsModal} onHide={this.handleCloseDetails} className="text-light" id="details-modal">
-          <Modal.Header closeButton className="bg-dark">
-          <Modal.Title>Item Details</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="bg-dark">
-            {this.renderDetailsModal()}
-          </Modal.Body>
-          <Modal.Footer className="bg-dark">
-            <Button variant="secondary" onClick={this.handleCloseDetails}>Close</Button>
-          </Modal.Footer>
-        </Modal>
-
-        <Modal show={this.state.showDeactivateModal} onHide={this.handleCloseDeactivate} className="text-light" id="deactivate-modal">
-          <Modal.Header closeButton className="bg-dark">
-          <Modal.Title>Deactivate item</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="bg-dark">
-            {this.renderDeactivateModal()}
-          </Modal.Body>
-          <Modal.Footer className="bg-dark">
-            <Button variant="secondary" onClick={this.handleCloseDeactivate}>Cancel</Button>
-            <Button type="submit" variant="danger" form="deactivate-form">Deactivate item</Button>
+            <Button variant="secondary" onClick={this.handleCloseModal}>Cancel</Button>
+            {this.state.action !== 'details' ? <Button type="submit" variant="primary" form="items">{this.state.modalButtonText}</Button> : null}
           </Modal.Footer>
         </Modal>
 
