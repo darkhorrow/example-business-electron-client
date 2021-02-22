@@ -107,8 +107,8 @@ class Articles extends React.Component {
   addItem = () => {
     this.handleShowModal();
     this.setState({
-      modalTitle: 'Add Supplier',
-      modalButtonText: 'Add Supplier',
+      modalTitle: 'Add Item',
+      modalButtonText: 'Add Item',
       action: 'add'
     });
   }
@@ -279,7 +279,6 @@ class Articles extends React.Component {
               {isActive ?
                   (<>
                   <option selected>ACTIVE</option>
-                  <option>DISCONTINUED</option>
                   </>)
                   :
                   (<>
