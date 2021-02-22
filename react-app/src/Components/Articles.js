@@ -395,6 +395,15 @@ class Articles extends React.Component {
             })}
           </Form.Control>
         </Form.Group>
+        <Form.Group controlId="detailsItemForm.deactivations">
+          <Form.Label>Item Deactivations</Form.Label>
+          <Form.Control as="select" multiple>
+            {console.log(this.state.itemSelected)}
+            {this.state.itemSelected.deactivationReasons.map(deactivation => {
+            return <option>{deactivation.deactivationReason} | {deactivation.creator.username}</option>
+            })}
+          </Form.Control>
+        </Form.Group>
       </Form>
     );
   }
